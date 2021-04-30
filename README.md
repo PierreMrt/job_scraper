@@ -30,6 +30,8 @@ At the bottom of this file, you'll find a task list to easily view where the pro
 ### tools:
 google sheet:
 https://docs.google.com/spreadsheets/d/1Xfsz0uhI_YVVBCE_eHCwmJCiLJmIB-jo2uL4WnpD81g/edit?usp=sharing
+db diagram:
+https://dbdiagram.io/d/608bd65fb29a09603d12d414
 
 
 
