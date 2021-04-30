@@ -10,13 +10,18 @@ job scraper is a web app that allow you to set up job searches via the scraping 
 At the bottom of this file, you'll find a task list to easily view where the project stands at.
 
 If you are a contributor and you want to start adding some code follow this procedure (this is using the CLI/Terminal/Command Interface):
+The following steps will assume that you are using the Windows Command Line.
 
 1. Clone the repository
 
-Navigate to the folder in which you want to store this project then write `git clone https://github.com/PierreMrt/job_scraper.git`.
-To enter the created folder, use `cd job_scraper`.
+> Navigate to the folder in which you want to store this project then write `git clone https://github.com/PierreMrt/job_scraper.git`.
+> To enter the created folder, use `cd job_scraper`.
 
-2. ...
+2. Enter the pip environment with virtualenv
+
+> Because we are using python and to assure compatibility between contributors, we use virtualenv.
+> To use it enter the following line in your terminal `env_3_9_2\Scripts\activate`.
+> You should see (env_3_9_2) at the left of the current folder position `(env_3_9_2) C:\Users\JohnDoe\code\job_scrapper>`.
 
 ## :white_check_mark: Task list
 
