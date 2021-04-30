@@ -23,6 +23,12 @@ The following steps will assume that you are using the Windows Command Line.
 > To use it enter the following line in your terminal `env_3_9_2\Scripts\activate`.
 > You should see (env_3_9_2) at the left of the current folder position `(env_3_9_2) C:\Users\JohnDoe\code\job_scrapper>`.
 
+---
+
+> I need to install a python library, hwo do it do it?
+
+First, check that you are under the project's pip environment (in the terminal, you should have (env_3_9_2) at the left of your current foler position). Then, just run `pip install <your-library>`. It should be installed for the whole project.
+
 ## :white_check_mark: Task list
 
 ### :rocket: Setting up the projet
