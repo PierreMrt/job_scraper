@@ -18,11 +18,11 @@ The following steps will assume that you are using the Windows Command Line.
 
 2. Create a pip environment with virtualenv
 
-> Because we are using python and to assure compatibility between contributors, we use virtualenv. First, check that virtualenv is installed by writing `virtualenv` in your command line. If it doesn't recognise it, simply install it with `pip install virtualenv`. Then create your environement with `virtualenv NAME-OF-THE-ENVIRONMENT`.
+> Because we are using python and to assure compatibility between contributors, we use virtualenv. First, check that virtualenv is installed by writing `virtualenv` in your command line. If it doesn't recognise it, simply install it with `pip install virtualenv`. Then create your environement with `virtualenv env_VERSION_OF_PYTHON`. Replace VERSION_OF_PYTHON with your current Python version. Check it with `py --version`.
 
 3. Enter the pip environment with virtualenv
 
-> To use it, enter the following line in your terminal `env_3_9_2\Scripts\activate`. You should see (env_3_9_2) at the left of the current folder position `(env_3_9_2) C:\Users\JohnDoe\code\job_scrapper>`.
+> To use it, enter the following line in your terminal `env_VERSION_OF_PYTHON\Scripts\activate`. You should see (env_3_9_2) at the left of the current folder position `(env_VERSION_OF_PYTHON) C:\Users\JohnDoe\code\job_scrapper>`.
 
 4. Install all pip dependencies
 
