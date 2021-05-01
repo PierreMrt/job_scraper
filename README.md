@@ -46,11 +46,7 @@ First, check that you are under the project's pip environment (in the terminal, 
 
 ### Making of the project
 
-- [x] Create a repository on github
-- [x] Add a main Readme
-- [ ] Plan the different steps of the project
-- [ ] Design the structure of the database
-- [ ] 
+- [ ]
 
 ### tools:
 google sheet:
