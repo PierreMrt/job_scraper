@@ -11,7 +11,8 @@ class SqlConnexion:
         self.conn = self._create_connexion()
         self.curr = self.conn.cursor()
 
-        self.fields = ('ID', 'source', 'title', 'text', 'country', 'city', 'date', 'link')
+        self.fields = ('id', 'search_key', 'source', 'job_id', 'job_title', 'description', 'company', 'location',
+                       'country', 'date', 'link')
 
     def _create_connexion(self):
         path = PATH.format(name=self.name)
@@ -29,12 +30,12 @@ class SqlConnexion:
         statement = "CREATE TABLE {0} {1}".format(table_name, self.fields)
         self.curr.execute(statement)
 
-    def insert_into_table(self, table, row):
-        statement = 'INSERT INTO "{0}" {1} VALUES (?, ?, ?, ?, ?, ?, ?, ?)'.format(table, self.fields)
+    def insert_into_table(self, row):
+        statement = 'INSERT INTO results {0} VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(self.fields)
         self.curr.execute(statement, row)
 
-    def db_to_panda(self, table):
-        statement = "SELECT * FROM {0}".format(table)
+    def db_to_panda(self, search_key):
+        statement = "SELECT * FROM results WHERE search_key='{0}'".format(search_key)
         query = pd.read_sql_query(statement, self.conn)
         df = pd.DataFrame(query, columns=self.fields)
 
@@ -64,7 +65,62 @@ def create_database(name):
             conn.close()
 
 
+def create_tables(db_name):
+    db = SqlConnexion(db_name)
+    conn = db.conn
+    c = conn.cursor()
+
+    # create search table
+    sql = """CREATE TABLE IF NOT EXISTS search (
+                id integer PRIMARY KEY,
+                user text NOT NULL,
+                job text,
+                country text,
+                search_key text
+            )"""
+    c.execute(sql)
+
+    # create links table
+    sql = """CREATE TABLE IF NOT EXISTS links (
+                id integer PRIMARY KEY,
+                country text NOT NULL,
+                extension text,
+                LinkedIn text,
+                Monster text,
+                Indeed text
+            )"""
+    c.execute(sql)
+
+    # create users table
+    sql = """CREATE TABLE IF NOT EXISTS users (
+                id integer PRIMARY KEY,
+                username text NOT NULL,
+                mail text,
+                password text
+            )"""
+    c.execute(sql)
+    # create results table
+    sql = """CREATE TABLE IF NOT EXISTS results (
+                id integer PRIMARY KEY,
+                search_key text NOT NULL,
+                source text,
+                job_id,
+                job_title text,
+                description text,
+                company text,
+                location text,
+                country text,
+                date datetime,
+                link text       
+            )"""
+    c.execute(sql)
+
+    conn.close()
+
+
 if __name__ == '__main__':
-    create_database('jobs.db')
+    db_name = 'jobs.db'
+    create_database(db_name)
+    create_tables(db_name)
 
 

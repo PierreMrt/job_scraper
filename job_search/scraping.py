@@ -1,22 +1,26 @@
 from bs4 import BeautifulSoup
 import requests
+import re
+from datetime import date
 
-
+DATE = date.today().strftime("%d/%m/%Y")
 URL = 'https://www.linkedin.com/jobs/search/?'
 
 
-def scrap(db, job_title, location, days, table_name):
+def scrap(db, job_title, location, days):
     """ Add Monster, glassdoor, ... scraping"""
-    LinkedInScrap(db, job_title, location, days=days, table_name=table_name)
+    # LinkedInScrap(db, job_title, location, days=days)
+    IndeedScrap(db, job_title, location)
 
 
 class LinkedInScrap:
-    def __init__(self, db, job_title, location, days, table_name):
+    def __init__(self, db, job_title, location, days):
 
         self.parameters = {'f_TPR': f'r{days * 86400}', 'keywords': job_title, 'location': location, 'start': 0}
 
         self.db = db
-        self.table = table_name
+        self.location = location
+        self.search_key = f"{job_title}&&{location}"
 
         self.job_ids = self._get_ids()
         self._scrap_results()
@@ -71,8 +75,89 @@ class LinkedInScrap:
                 error_count += 1
                 continue
 
-            row = (job_id, 'LinkedIn', title, description, company, location, '29/04/2021', link,)
-            self.db.insert_into_table(self.table, row)
+            row = (self.search_key, 'LinkedIn', job_id, title, description, company, location, self.location,
+                   DATE, link)
+            self.db.insert_into_table(row)
             self.db.conn.commit()
 
         print(f'Finished scraping with {error_count} errors.')
+
+
+class IndeedScrap:
+    def __init__(self, db, job_title, location):
+        self.db = db
+        self.search_key = f"{job_title}&&{location}"
+        self.location = location
+        self.job_ids = self._get_ids()
+        self._scrap_results()
+
+    @staticmethod
+    def _bs4_content(url):
+        source = requests.get(url)
+        content = BeautifulSoup(source.text, 'html.parser')
+        return content
+
+    def _get_ids(self):
+        job_ids = []
+        url = f"https://it.indeed.com/jobs?q=data_analyst"
+        while not job_ids:
+            content = self._bs4_content(url)
+            jobs = content.find_all('div', class_="jobsearch-SerpJobCard")
+
+            for job in jobs:
+                job_ids.append(job.attrs['data-jk'])
+
+        return job_ids
+
+    def _scrap_results(self):
+        for start in range(0, 100, 10):
+            url = "https://it.indeed.com/offerta-lavoro?jk={job_id}&start={start}"
+            print(f"Scraping {len(self.job_ids)} job offers ...")
+
+            for job_id in self.job_ids:
+                link = url.format(job_id=job_id, start=start)
+                content = self._bs4_content(link)
+                title = content.find('div', class_='jobsearch-JobInfoHeader-title-container').text
+                info = content.find('div', class_='jobsearch-JobInfoHeader-subtitle').find_all('div')
+
+                company = info[0].text
+                company = re.split(r'(\d+)', company)[0]
+                if len(info) > 4:
+                    location = info[8].text
+                else:
+                    location = info[2].text
+                location = re.split(r'(\d+)', location)[-1]
+
+                text = content.find('div', class_='jobsearch-jobDescriptionText').text
+
+                row = (self.search_key, 'Indeed', job_id, title, text, company, location, self.location,
+                       DATE, link)
+                self.db.insert_into_table(row)
+                self.db.conn.commit()
+
+
+class MonsterScrap:
+    def __init__(self, db, job_title, location):
+        self.db = db
+        self.search_key = f"{job_title}&&{location}"
+        self.job_title = job_title
+        self.job_ids = self._get_ids()
+
+    def _bs4_content(self, url):
+        source = requests.get(url)
+        content = BeautifulSoup(source.text, 'html.parser')
+        return content
+
+    def _get_ids(self):
+        url = f"https://www.monster.it/lavoro/cerca?q=data+analyst"
+        content = self._bs4_content(url)
+
+        jobs = content.find_all('div')
+        for job in jobs:
+            print(job)
+
+
+if __name__ == '__main__':
+    scrap = IndeedScrap(None, 'data_analyst', 'italy')
+    # print(scrap.job_ids)
+    # print(len(scrap.job_ids))
