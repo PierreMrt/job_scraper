@@ -52,6 +52,17 @@ class SqlConnexion:
         return active_tables
 
 
+def get_job_ids(db):
+    db.curr.execute("SELECT job_id FROM results")
+    job_ids = db.curr.fetchall()
+    set_ids = set()
+
+    for i in job_ids:
+        set_ids.add(i[0])
+
+    return set_ids
+
+
 def create_database(name):
     path = PATH.format(name=name)
 
@@ -122,5 +133,6 @@ if __name__ == '__main__':
     db_name = 'jobs.db'
     create_database(db_name)
     create_tables(db_name)
+
 
 

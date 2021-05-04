@@ -51,11 +51,6 @@ if __name__ == '__main__':
     links = db.curr.fetchall()
     [print(link) for link in links]
 
-    # db = SqlConnexion('jobs.db')
-    # tables = db.get_tables()
-    # for table in tables:
-    #     df = db.db_to_panda(table)
-    #     print(df.head(20))
 
 
 
