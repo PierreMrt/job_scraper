@@ -1,5 +1,5 @@
-from scraping import scrap
-from db_management import SqlConnexion
+from job_search.scraping import scrap
+from job_search.db_management import SqlConnexion
 
 DB_NAME = 'jobs.db'
 
