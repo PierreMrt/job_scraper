@@ -7,16 +7,16 @@ DATE = date.today().strftime("%d/%m/%Y")
 URL = 'https://www.linkedin.com/jobs/search/?'
 
 
-def scrap(db, job_title, location, days):
+def scrap(db, job_title, location):
     """ Add Monster, glassdoor, ... scraping"""
-    # LinkedInScrap(db, job_title, location, days=days)
+    LinkedInScrap(db, job_title, location)
     IndeedScrap(db, job_title, location)
 
 
 class LinkedInScrap:
-    def __init__(self, db, job_title, location, days):
+    def __init__(self, db, job_title, location):
 
-        self.parameters = {'f_TPR': f'r{days * 86400}', 'keywords': job_title, 'location': location, 'start': 0}
+        self.parameters = {'keywords': job_title, 'location': location, 'start': 0}
 
         self.db = db
         self.location = location

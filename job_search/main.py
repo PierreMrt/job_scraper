@@ -23,7 +23,7 @@ def create_new_search(job_title, location):
     if search_key not in actives:
         row = ('pierre', job_title, location, search_key)
         db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
-        scrap(db, job_title, location, days=10)
+        scrap(db, job_title, location)
     else:
         print(f'Search for {job_title} in {location} is already active.')
 
@@ -37,7 +37,7 @@ def update_searches():
     actives = get_active_search(db)
     for search in actives:
         search_item = search.split('&&')
-        scrap(db, search_item[0], search_item[1], days=1)
+        scrap(db, search_item[0], search_item[1])
 
     db.conn.close()
 
