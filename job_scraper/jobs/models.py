@@ -37,10 +37,3 @@ class Results(models.Model):
     link = models.CharField(max_length=255)
 
 
-if __name__ == '__main__':
-    u1 = Users(username='Paul', email='paul@email.com', password='*****')
-    u2 = Users(username='Jacques', email='jacques@email.com', password='*****')
-
-    s1 = Search(user=u1, job='data_analyst', country='france', search_key='data_analyst&&france')
-
-    print(s1.user)
