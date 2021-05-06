@@ -36,4 +36,3 @@ class Results(models.Model):
     date = models.DateTimeField()
     link = models.CharField(max_length=255)
 
-
