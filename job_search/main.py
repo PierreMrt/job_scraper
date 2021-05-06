@@ -19,7 +19,6 @@ def create_new_search(job_title, location):
 
     db = SqlConnexion(DB_NAME)
     actives = get_active_search(db)
-    print(actives)
     if search_key not in actives:
         row = ('pierre', job_title, location, search_key)
         db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
@@ -43,13 +42,13 @@ def update_searches():
 
 
 if __name__ == '__main__':
-    create_new_search('data_analyst', 'italy')
+    create_new_search('data_analyst', 'france')
     # update_searches()
-    db = SqlConnexion('jobs.db')
-    sql = 'SELECT link FROM results'
-    db.curr.execute(sql)
-    links = db.curr.fetchall()
-    [print(link) for link in links]
+    # db = SqlConnexion('jobs.db')
+    # sql = 'SELECT link FROM results'
+    # db.curr.execute(sql)
+    # links = db.curr.fetchall()
+    # [print(link) for link in links]
 
 
 

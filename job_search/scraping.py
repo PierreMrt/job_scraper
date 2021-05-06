@@ -1,16 +1,19 @@
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 import requests
 import re
 from datetime import date
 
 DATE = date.today().strftime("%d/%m/%Y")
-URL = 'https://www.linkedin.com/jobs/search/?'
 
 
 def scrap(db, job_title, location):
     """ Add Monster, glassdoor, ... scraping"""
     LinkedInScrap(db, job_title, location)
     IndeedScrap(db, job_title, location)
+    MonsterScrap(db, job_title, location)
 
 
 class LinkedInScrap:
@@ -27,8 +30,8 @@ class LinkedInScrap:
 
     def _bs4_content(self, start):
         self.parameters['start'] = start
-
-        source = requests.get(URL, params=self.parameters)
+        url = 'https://www.linkedin.com/jobs/search/?'
+        source = requests.get(url, params=self.parameters)
         content = BeautifulSoup(source.text, 'html.parser')
         return content
 
@@ -141,23 +144,57 @@ class MonsterScrap:
         self.db = db
         self.search_key = f"{job_title}&&{location}"
         self.job_title = job_title
+        self.location = location
         self.job_ids = self._get_ids()
+        self._scrap_results()
 
-    def _bs4_content(self, url):
+    @staticmethod
+    def _selenium_content(url):
+        options = Options()
+        options.add_argument("--headless")
+        driver = webdriver.Chrome(options=options)
+        driver.get(url)
+        time.sleep(8)
+        html = driver.execute_script('return document.body.innerHTML;')
+        content = BeautifulSoup(html, 'html.parser')
+        driver.close()
+
+        return content
+
+    @staticmethod
+    def _bs4_content(url):
         source = requests.get(url)
         content = BeautifulSoup(source.text, 'html.parser')
         return content
 
     def _get_ids(self):
-        url = f"https://www.monster.it/lavoro/cerca?q=data+analyst"
-        content = self._bs4_content(url)
-
-        jobs = content.find_all('div')
+        job_ids = []
+        url = f"https://www.monster.it/lavoro/cerca?q={self.job_title}&page=10&geo=0"
+        content = self._selenium_content(url)
+        jobs = content.find_all('a', class_="view-details-link")
         for job in jobs:
-            print(job)
+            job_ids.append(job.attrs['href'])
+        return job_ids
+
+    def _scrap_results(self):
+        url = "https://www.monster.it/{job_id}"
+        print(f"Scraping {len(self.job_ids)} job offers ...")
+
+        for job_id in self.job_ids:
+            link = url.format(job_id=job_id)
+            content = self._bs4_content(link)
+            title = content.find('h1', class_='job_title').text
+            company = content.find('div', class_="job_company_name tag-line").text
+            location = content.find('div', class_='location').text
+            text = content.find('div', class_="job-description").text
+
+            row = (self.search_key, 'Monster', job_id, title, text, company, location, self.location,
+                   DATE, link)
+            self.db.insert_into_table(row)
+            self.db.conn.commit()
 
 
 if __name__ == '__main__':
-    scrap = IndeedScrap(None, 'data_analyst', 'italy')
+    scrap = MonsterScrap(None, 'data_analyst', 'italy')
     # print(scrap.job_ids)
     # print(len(scrap.job_ids))
