@@ -1,8 +1,9 @@
 import sqlite3
 from sqlite3 import Error
 import pandas as pd
+from pathlib import Path
 
-PATH = 'db/{name}'
+PATH = str(Path.cwd()) + '/job_search/db/{name}'
 
 
 class SqlConnexion:
