@@ -41,15 +41,26 @@ def update_searches():
 
     db.conn.close()
 
+def delete_search(search_key):
+    db = SqlConnexion(DB_NAME)
+    sql = 'DELETE FROM results WHERE search_key=?'
+    db.curr.execute(sql, (search_key,))
+    sql = 'DELETE FROM search WHERE search_key=?'
+    db.curr.execute(sql, (search_key,))
+
+    db.conn.commit()
+    db.conn.close()
 
 if __name__ == '__main__':
-    # create_new_search('data_analyst', 'france')
+    delete_search('data_analyst&&france')
+    create_new_search('data_analyst', 'france')
     # update_searches()
-    db = SqlConnexion('jobs.db')
-    sql = 'SELECT link FROM results'
-    db.curr.execute(sql)
-    links = db.curr.fetchall()
-    [print(link) for link in links]
+    # db = SqlConnexion('jobs.db')
+    # sql = 'SELECT link FROM results'
+    # db.curr.execute(sql)
+    # links = db.curr.fetchall()
+    # [print(link) for link in links]
+
 
 
 
