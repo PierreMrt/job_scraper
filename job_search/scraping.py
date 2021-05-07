@@ -9,23 +9,6 @@ from datetime import date
 DATE = date.today().strftime("%d/%m/%Y")
 
 
-def scrap(db, job_title, location):
-    cache = cached_ids(db)
-    """ Add Monster, glassdoor, ... scraping"""
-    LinkedInScrap(db, cache, job_title, location)
-    IndeedScrap(db, cache, job_title, location)
-    MonsterScrap(db, cache, job_title, location)
-    
-
-def cached_ids(db):
-    cached_ids = set()
-    db.curr.execute("SELECT job_id FROM results")
-    cache = db.curr.fetchall()
-    [cached_ids.add(i[0]) for i in cache]
-
-    return cached_ids
-
-
 class LinkedInScrap:
     def __init__(self, db, cache, job_title, location):
 
@@ -96,17 +79,22 @@ class LinkedInScrap:
 
 
 class IndeedScrap:
-    def __init__(self, db, cache, job_title, location):
+    def __init__(self, db, links, cache, job_title, location):
         self.db = db
         self.cache = cache
-        self.search_key = f"{job_title}&&{location}"
+
+        self.extension = links[0]
+        self.link = links[2]
+
+        self.job_title = job_title
         self.location = location
+
         self.job_ids = self._get_ids()
         self._scrap_results()
 
     def _get_ids(self):
         job_ids = []
-        url = f"https://it.indeed.com/jobs?q=data_analyst"
+        url = f"https://{self.extension}.indeed.com/jobs?q={self.job_title}"
 
         content = selenium_content(url)
         if content.find('div', class_='h-captcha') is not None:
@@ -123,12 +111,11 @@ class IndeedScrap:
     def _scrap_results(self):
         count = 0
         for start in range(0, 100, 10):
-            url = "https://it.indeed.com/offerta-lavoro?jk={job_id}&start={start}"
 
             for job_id in self.job_ids:
                 if job_id not in self.cache:
-                    link = url.format(job_id=job_id, start=start)
-                    content = bs4_content(link)
+                    url = f"{self.link}jk={job_id}&start={start}"
+                    content = bs4_content(url)
                     title = content.find('div', class_='jobsearch-JobInfoHeader-title-container').text
                     info = content.find('div', class_='jobsearch-JobInfoHeader-subtitle').find_all('div')
 
@@ -142,8 +129,8 @@ class IndeedScrap:
 
                     text = content.find('div', class_='jobsearch-jobDescriptionText').text
 
-                    row = (self.search_key, 'Indeed', job_id, title, text, company, location, self.location,
-                        DATE, link)
+                    row = (f'{self.job_title}&&{self.location}', 'Indeed', job_id, title, text, company, location, self.location,
+                        DATE, url)
                     self.db.insert_into_table(row)
                     self.db.conn.commit()
                     count += 1
@@ -152,18 +139,22 @@ class IndeedScrap:
 
 
 class MonsterScrap:
-    def __init__(self, db, cache, job_title, location):
+    def __init__(self, db, links, cache, job_title, location):
         self.db = db
         self.cache = cache
-        self.search_key = f"{job_title}&&{location}"
+
+        self.extension = links[0]
+        self.link = links[1]
+
         self.job_title = job_title
         self.location = location
+
         self.job_ids = self._get_ids()
         self._scrap_results()
 
     def _get_ids(self):
         job_ids = []
-        url = f"https://www.monster.it/lavoro/cerca?q={self.job_title}&page=10&geo=0"
+        url = f"{self.link}q={self.job_title}&page=10&geo=0"
         content = selenium_content(url)
         jobs = content.find_all('a', class_="view-details-link")
         for job in jobs:
@@ -171,20 +162,19 @@ class MonsterScrap:
         return job_ids
 
     def _scrap_results(self):
-        url = "https://www.monster.it/{job_id}"
         count = 0
 
         for job_id in self.job_ids:
             if job_id not in self.cache:
-                link = url.format(job_id=job_id)
-                content = bs4_content(link)
+                url = f"https://www.monster.{self.extension}{job_id}"
+                content = bs4_content(url)
                 title = content.find('h1', class_='job_title').text
                 company = content.find('div', class_="job_company_name tag-line").text
                 location = content.find('div', class_='location').text
                 text = content.find('div', class_="job-description").text
 
-                row = (self.search_key, 'Monster', job_id, title, text, company, location, self.location,
-                    DATE, link)
+                row = (f'{self.job_title}&&{self.location}', 'Monster', job_id, title, text, company, location, self.location,
+                    DATE, url)
                 self.db.insert_into_table(row)
                 self.db.conn.commit()
                 count += 1
