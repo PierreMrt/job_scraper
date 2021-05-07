@@ -84,7 +84,6 @@ class LinkedInScrap:
                     location = details.find('span').text
                     description = content.find('section', class_="description").text
                 except AttributeError as e:
-                    print(e)
                     continue
 
                 row = (self.search_key, 'LinkedIn', job_id, title, description, company, location, self.location,

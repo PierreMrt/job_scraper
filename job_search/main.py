@@ -18,17 +18,16 @@ def create_new_search(job_title, location):
     search_key = f'{job_title}&&{location}'
 
     db = SqlConnexion(DB_NAME)
-    # actives = get_active_search(db)
-    # if search_key not in actives:
-    #     row = ('pierre', job_title, location, search_key)
-    #     db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
-    #     scrap(db, job_title, location)
-    # else:
-    #     print(f'Search for {job_title} in {location} is already active.')
-    scrap(db, job_title, location)
+    actives = get_active_search(db)
+    if search_key not in actives:
+        row = ('pierre', job_title, location, search_key)
+        db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
+        scrap(db, job_title, location)
+    else:
+        print(f'Search for {job_title} in {location} is already active.')
 
-    df = db.db_to_panda(search_key)
-    print(df)
+    # df = db.db_to_panda(search_key)
+    # print(df)
     db.conn.close()
 
 
@@ -37,19 +36,20 @@ def update_searches():
     actives = get_active_search(db)
     for search in actives:
         search_item = search.split('&&')
+        print(f'Scraping offers for {search_item[0]} in {search_item[1]}')
         scrap(db, search_item[0], search_item[1])
 
     db.conn.close()
 
 
 if __name__ == '__main__':
-    create_new_search('data_analyst', 'france')
+    # create_new_search('data_analyst', 'france')
     # update_searches()
-    # db = SqlConnexion('jobs.db')
-    # sql = 'SELECT link FROM results'
-    # db.curr.execute(sql)
-    # links = db.curr.fetchall()
-    # [print(link) for link in links]
+    db = SqlConnexion('jobs.db')
+    sql = 'SELECT link FROM results'
+    db.curr.execute(sql)
+    links = db.curr.fetchall()
+    [print(link) for link in links]
 
 
 

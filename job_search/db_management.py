@@ -118,11 +118,23 @@ def create_tables(db_name):
 
     conn.close()
 
+def populate_links_table(db_name):
+    db = SqlConnexion(db_name)
+    links = [(None, 'italy', 'it', 'www.linkedin.com', 'https://www.monster.it/lavoro/cerca?', 'https://it.indeed.com/offerta-lavoro?'),
+             (None, 'france', 'fr', 'www.linkedin.com', 'https://www.monster.fr/emploi/recherche?', 'https://fr.indeed.com/voir-emploi?'),
+             (None, 'uruguay', 'uy', 'www.linkedin.com', None, 'https://uy.indeed.com/descripción-del-puesto?'),
+             (None, 'austria', 'at', 'www.linkedin.com', 'https://www.monster.at/jobs/suche?', 'https://at.indeed.com/Zeige-Job?')
+    ]
+    db.curr.executemany('INSERT INTO links VALUES(?, ?, ?, ?, ?, ?);', links)
+    print(f'{db.curr.rowcount} rows inserted')
+    db.conn.commit()
+    db.conn.close()
 
 if __name__ == '__main__':
     db_name = 'jobs.db'
-    create_database(db_name)
-    create_tables(db_name)
+    # create_database(db_name)
+    # create_tables(db_name)
+    populate_links_table(db_name)
 
 
 
