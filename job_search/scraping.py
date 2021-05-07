@@ -108,8 +108,12 @@ class IndeedScrap:
     def _get_ids(self):
         job_ids = []
         url = f"https://it.indeed.com/jobs?q=data_analyst"
-        while not job_ids:
-            content = selenium_content(url)
+
+        content = selenium_content(url)
+        if content.find('div', class_='h-captcha') is not None:
+            print('captcha')
+
+        else:
             jobs = content.find_all('div', class_="jobsearch-SerpJobCard")
 
             for job in jobs:
