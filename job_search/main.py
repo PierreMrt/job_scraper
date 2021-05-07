@@ -18,13 +18,14 @@ def create_new_search(job_title, location):
     search_key = f'{job_title}&&{location}'
 
     db = SqlConnexion(DB_NAME)
-    actives = get_active_search(db)
-    if search_key not in actives:
-        row = ('pierre', job_title, location, search_key)
-        db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
-        scrap(db, job_title, location)
-    else:
-        print(f'Search for {job_title} in {location} is already active.')
+    # actives = get_active_search(db)
+    # if search_key not in actives:
+    #     row = ('pierre', job_title, location, search_key)
+    #     db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
+    #     scrap(db, job_title, location)
+    # else:
+    #     print(f'Search for {job_title} in {location} is already active.')
+    scrap(db, job_title, location)
 
     df = db.db_to_panda(search_key)
     print(df)
