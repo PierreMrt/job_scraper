@@ -25,8 +25,24 @@ class Scraper:
             jobs = content.find_all(self.id_param['tag'], class_=self.id_param['class'])
             for job in jobs:
                 job_ids.add(job.attrs[self.id_param['attr']])
-
         return job_ids
+
+    def _fetch_details(self, content, job_details):
+        for key, param in job_details.items():
+            try:
+                job_details[key] = content.find(param['tag'], class_=param['class']).text
+            except AttributeError as e:
+                print(e)
+                job_details[key] = ""
+        return job_details
+
+    def _insert_into_table(self, job_details, source, job_id, link):
+        row = (f'{self.job_title}&&{self.location}', source, job_id, job_details['title'], job_details['text'], 
+            job_details['company'], job_details['location'], self.location, DATE, link)
+        statement = 'INSERT INTO results {0} VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(self.db.results_fields)
+        self.db.curr.execute(statement, row)
+        self.db.conn.commit()
+
 
 class LinkedIn(Scraper):
     def __init__(self, db, cache, job_title, location):
@@ -55,24 +71,16 @@ class LinkedIn(Scraper):
         for job_id in self.job_ids:
             if job_id not in self.cache:
                 link = url.format(job_id=job_id)
-                source = requests.get(link)
-                content = BeautifulSoup(source.text, 'html.parser')
-
-                try:
-                    title = content.find('h3', class_="sub-nav-cta__header").text
-                    company = content.find('a', class_='topcard__org-name-link').text
-                    location = content.find('span', class_='topcard__flavor--bullet').text
-                    description = content.find('section', class_="description").text
-                except AttributeError as e:
-                    print(e)
-                    continue
-
-                row = (f'{self.job_title}&&{self.location}', 'LinkedIn', job_id, title, description, company, location, self.location,
-                    DATE, link)
-                self.db.insert_into_table(row)
-                self.db.conn.commit()
+                content = bs4_content(link)
+                job_details = {
+                    'title'   : {'tag': 'h3'     , 'class': 'sub-nav-cta__header'},
+                    'company' : {'tag': 'a'      , 'class': 'topcard__org-name-link'},
+                    'location': {'tag': 'span'   , 'class': 'topcard__flavor--bullet'},
+                    'text'    : {'tag': 'section', 'class': 'description'}
+                    }
+                job_details = self._fetch_details(content, job_details)
+                self._insert_into_table(job_details, 'LinkedIn', job_id, link)
                 count += 1
-
         print(f'added {count} offers from LinkedIn')
 
 
@@ -85,7 +93,7 @@ class Indeed(Scraper):
         self.results_page_url = f"https://{links[0]}.indeed.com/jobs?q={self.job_title}"
         self.id_param = {
             'tag'  : 'div',
-            'class': "jobsearch-SerpJobCard", 
+            'class': 'job_scraper/obsearch-SerpJobCard', 
             'attr' : 'data-jk'}
 
         self.job_ids = self._get_ids()
@@ -126,7 +134,6 @@ class Monster(Scraper):
         super().__init__(db, cache, job_title, location)
 
         self.extension = links[0]
-        self.link = links[1]
 
         self.results_page_url = f"{links[1]}q={self.job_title}&page=10&geo=0"
         self.id_param = {
@@ -139,20 +146,19 @@ class Monster(Scraper):
 
     def _scrap_results(self):
         count = 0
-
         for job_id in self.job_ids:
             if job_id not in self.cache:
-                url = f"https://www.monster.{self.extension}{job_id}"
-                content = bs4_content(url)
-                title = content.find('h1', class_='job_title').text
-                company = content.find('div', class_="job_company_name tag-line").text
-                location = content.find('div', class_='location').text
-                text = content.find('div', class_="job-description").text
+                link = f"https://www.monster.{self.extension}{job_id}"
+                content = bs4_content(link)
 
-                row = (f'{self.job_title}&&{self.location}', 'Monster', job_id, title, text, company, location, self.location,
-                    DATE, url)
-                self.db.insert_into_table(row)
-                self.db.conn.commit()
+                job_details = {
+                    'title'   : {'tag': 'h1' , 'class': 'job_title'},
+                    'company' : {'tag': 'div', 'class': 'job_company_name tag-line'},
+                    'location': {'tag': 'div', 'class': 'location'},
+                    'text'    : {'tag': 'div', 'class': 'job-description'}
+                    }
+                job_details = self._fetch_details(content, job_details)
+                self._insert_into_table(job_details, 'LinkedIn', job_id, link)
                 count += 1
 
         print(f'added {count} offers from Monster')

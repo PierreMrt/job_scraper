@@ -12,7 +12,7 @@ class SqlConnexion:
         self.conn = self._create_connexion()
         self.curr = self.conn.cursor()
 
-        self.fields = ('id', 'search_key', 'source', 'job_id', 'job_title', 'description', 'company', 'location',
+        self.results_fields = ('id', 'search_key', 'source', 'job_id', 'job_title', 'description', 'company', 'location',
                        'country', 'date', 'link')
 
     def _create_connexion(self):
@@ -28,17 +28,13 @@ class SqlConnexion:
         return conn
 
     def create_table(self, table_name):
-        statement = "CREATE TABLE {0} {1}".format(table_name, self.fields)
+        statement = "CREATE TABLE {0} {1}".format(table_name, self.results_fields)
         self.curr.execute(statement)
-
-    def insert_into_table(self, row):
-        statement = 'INSERT INTO results {0} VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(self.fields)
-        self.curr.execute(statement, row)
 
     def db_to_panda(self, search_key):
         statement = "SELECT * FROM results WHERE search_key='{0}'".format(search_key)
         query = pd.read_sql_query(statement, self.conn)
-        df = pd.DataFrame(query, columns=self.fields)
+        df = pd.DataFrame(query, columns=self.results_fields)
 
         return df
 
