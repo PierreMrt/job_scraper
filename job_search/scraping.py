@@ -46,7 +46,6 @@ class LinkedInScrap:
 
                 try:
                     title = content.find('h3', class_="sub-nav-cta__header").text
-                    details = content.find('div', class_="sub-nav-cta__sub-text-container")
                     company = content.find('a', class_='topcard__org-name-link').text
                     location = content.find('span', class_='topcard__flavor--bullet').text
                     description = content.find('section', class_="description").text
@@ -78,7 +77,7 @@ class IndeedScrap:
         self._scrap_results()
 
     def _get_ids(self):
-        job_ids = []
+        job_ids = set()
         url = f"https://{self.extension}.indeed.com/jobs?q={self.job_title}"
 
         content = selenium_content(url)
@@ -89,7 +88,7 @@ class IndeedScrap:
             jobs = content.find_all('div', class_="jobsearch-SerpJobCard")
 
             for job in jobs:
-                job_ids.append(job.attrs['data-jk'])
+                job_ids.add(job.attrs['data-jk'])
 
         return job_ids
 
@@ -138,12 +137,12 @@ class MonsterScrap:
         self._scrap_results()
 
     def _get_ids(self):
-        job_ids = []
+        job_ids = set()
         url = f"{self.link}q={self.job_title}&page=10&geo=0"
         content = selenium_content(url)
         jobs = content.find_all('a', class_="view-details-link")
         for job in jobs:
-            job_ids.append(job.attrs['href'])
+            job_ids.add(job.attrs['href'])
         return job_ids
 
     def _scrap_results(self):
