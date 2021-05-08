@@ -47,10 +47,11 @@ class LinkedInScrap:
                 try:
                     title = content.find('h3', class_="sub-nav-cta__header").text
                     details = content.find('div', class_="sub-nav-cta__sub-text-container")
-                    company = details.find('a').text
-                    location = details.find('span').text
+                    company = content.find('a', class_='topcard__org-name-link').text
+                    location = content.find('span', class_='topcard__flavor--bullet').text
                     description = content.find('section', class_="description").text
                 except AttributeError as e:
+                    print(e)
                     continue
 
                 row = (f'{self.job_title}&&{self.location}', 'LinkedIn', job_id, title, description, company, location, self.location,
@@ -181,3 +182,6 @@ def bs4_content(url):
     source = requests.get(url)
     content = BeautifulSoup(source.text, 'html.parser')
     return content
+
+if __name__ == '__main__':
+    LinkedInScrap(None, [], 'data_analyst', 'france')
