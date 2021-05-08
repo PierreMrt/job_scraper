@@ -7,7 +7,7 @@ DB_NAME = 'jobs.db'
 def scrap(db, job_title, location):
     links = get_links(db, location)
     cache = cached_ids(db)
-    # LinkedInScrap(db, cache, job_title, location)
+    LinkedInScrap(db, cache, job_title, location)
     IndeedScrap(db, links, cache, job_title, location)
     MonsterScrap(db, links, cache, job_title, location)
 

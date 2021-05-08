@@ -11,42 +11,26 @@ DATE = date.today().strftime("%d/%m/%Y")
 
 class LinkedInScrap:
     def __init__(self, db, cache, job_title, location):
-
-        self.parameters = {'keywords': job_title, 'location': location, 'start': 0}
+        self.parameters = {'keywords': job_title, 'location': location, 'start': 50}
 
         self.db = db
         self.cache = cache
+
         self.location = location
-        self.search_key = f"{job_title}&&{location}"
+        self.job_title = job_title
 
         self.job_ids = self._get_ids()
         self._scrap_results()
 
-    def _bs4_content(self, start):
-        self.parameters['start'] = start
-        url = 'https://www.linkedin.com/jobs/search/?'
-        source = requests.get(url, params=self.parameters)
-        content = BeautifulSoup(source.text, 'html.parser')
-        return content
-
-    def _nb_offers(self):
-        content = self._bs4_content(start=0)
-        nb_offers = content.find('span', class_="results-context-header__new-jobs").text
-        nb_offers = int(''.join(c for c in nb_offers if c.isdigit()))
-        return nb_offers
-
     def _get_ids(self):
-        offers = self._nb_offers()
-        pages = int(offers / 25)
         job_ids = set()
-        for page in range(0, pages):
-            content = self._bs4_content(start=page * 10)
-
-            jobs = content.find('ul', class_="jobs-search__results-list")
-
-            cards = jobs.find_all('li')
-            for card in cards:
-                job_id = card['data-id']
+        for start in range(0, 101, 25):
+            url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={self.job_title}&location={self.location}&start={start}'
+            content = bs4_content(url)
+            
+            jobs = content.find_all('a', class_="result-card__full-card-link")
+            for job in jobs:
+                job_id = job.attrs['href'].split('/')[5].split('?')[0]
                 job_ids.add(job_id)
 
         return job_ids
@@ -69,7 +53,7 @@ class LinkedInScrap:
                 except AttributeError as e:
                     continue
 
-                row = (self.search_key, 'LinkedIn', job_id, title, description, company, location, self.location,
+                row = (f'{self.job_title}&&{self.location}', 'LinkedIn', job_id, title, description, company, location, self.location,
                     DATE, link)
                 self.db.insert_into_table(row)
                 self.db.conn.commit()
@@ -197,9 +181,3 @@ def bs4_content(url):
     source = requests.get(url)
     content = BeautifulSoup(source.text, 'html.parser')
     return content
-
-
-if __name__ == '__main__':
-    scrap = MonsterScrap(None, 'data_analyst', 'italy')
-    # print(scrap.job_ids)
-    # print(len(scrap.job_ids))
