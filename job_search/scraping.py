@@ -8,16 +8,18 @@ from datetime import date
 
 DATE = date.today().strftime("%d/%m/%Y")
 
-
-class LinkedInScrap:
+class Scraper:
     def __init__(self, db, cache, job_title, location):
-        self.parameters = {'keywords': job_title, 'location': location, 'start': 50}
-
         self.db = db
         self.cache = cache
 
         self.location = location
         self.job_title = job_title
+
+class LinkedIn(Scraper):
+    def __init__(self, db, cache, job_title, location):
+        super().__init__(db, cache, job_title, location)
+        self.parameters = {'keywords': job_title, 'location': location, 'start': 50}
 
         self.job_ids = self._get_ids()
         self._scrap_results()
@@ -62,16 +64,11 @@ class LinkedInScrap:
         print(f'added {count} offers from LinkedIn')
 
 
-class IndeedScrap:
+class Indeed(Scraper):
     def __init__(self, db, links, cache, job_title, location):
-        self.db = db
-        self.cache = cache
-
+        super().__init__(db, cache, job_title, location)
         self.extension = links[0]
         self.link = links[2]
-
-        self.job_title = job_title
-        self.location = location
 
         self.job_ids = self._get_ids()
         self._scrap_results()
@@ -122,16 +119,12 @@ class IndeedScrap:
         print(f'added {count} offers from Indeed')
 
 
-class MonsterScrap:
+class Monster(Scraper):
     def __init__(self, db, links, cache, job_title, location):
-        self.db = db
-        self.cache = cache
+        super().__init__(db, cache, job_title, location)
 
         self.extension = links[0]
         self.link = links[1]
-
-        self.job_title = job_title
-        self.location = location
 
         self.job_ids = self._get_ids()
         self._scrap_results()
@@ -183,4 +176,4 @@ def bs4_content(url):
     return content
 
 if __name__ == '__main__':
-    LinkedInScrap(None, [], 'data_analyst', 'france')
+    LinkedIn(None, [], 'data_analyst', 'france')

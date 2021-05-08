@@ -1,4 +1,4 @@
-from scraping import LinkedInScrap, IndeedScrap, MonsterScrap
+from scraping import LinkedIn, Indeed, Monster
 from db_management import SqlConnexion
 
 DB_NAME = 'jobs.db'
@@ -7,9 +7,9 @@ DB_NAME = 'jobs.db'
 def scrap(db, job_title, location):
     links = get_links(db, location)
     cache = cached_ids(db)
-    LinkedInScrap(db, cache, job_title, location)
-    IndeedScrap(db, links, cache, job_title, location)
-    MonsterScrap(db, links, cache, job_title, location)
+    LinkedIn(db, cache, job_title, location)
+    Indeed(db, links, cache, job_title, location)
+    Monster(db, links, cache, job_title, location)
 
 
 def get_links(db, country):
