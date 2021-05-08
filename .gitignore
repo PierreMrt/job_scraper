@@ -4,3 +4,4 @@ env_3_7_3
 .env
 secrets.json
 .idea
+__pycache__
