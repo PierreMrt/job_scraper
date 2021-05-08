@@ -67,25 +67,27 @@ class LinkedIn(Scraper):
 class Indeed(Scraper):
     def __init__(self, db, links, cache, job_title, location):
         super().__init__(db, cache, job_title, location)
-        self.extension = links[0]
+
         self.link = links[2]
+
+        self.results_page_url = f"https://{links[0]}.indeed.com/jobs?q={self.job_title}"
+        self.id_param = {
+            'tag'  : 'div',
+            'class': "jobsearch-SerpJobCard", 
+            'attr' : 'data-jk'}
 
         self.job_ids = self._get_ids()
         self._scrap_results()
 
     def _get_ids(self):
         job_ids = set()
-        url = f"https://{self.extension}.indeed.com/jobs?q={self.job_title}"
-
-        content = selenium_content(url)
+        content = selenium_content(self.results_page_url)
         if content.find('div', class_='h-captcha') is not None:
             print('captcha')
-
         else:
-            jobs = content.find_all('div', class_="jobsearch-SerpJobCard")
-
+            jobs = content.find_all(self.id_param['tag'], class_=self.id_param['class'])
             for job in jobs:
-                job_ids.add(job.attrs['data-jk'])
+                job_ids.add(job.attrs[self.id_param['attrs']])
 
         return job_ids
 
