@@ -16,6 +16,18 @@ class Scraper:
         self.location = location
         self.job_title = job_title
 
+    def _get_ids(self):
+        job_ids = set()
+        content = selenium_content(self.results_page_url)
+        if content.find('div', class_='h-captcha') is not None:
+            print('captcha')
+        else:
+            jobs = content.find_all(self.id_param['tag'], class_=self.id_param['class'])
+            for job in jobs:
+                job_ids.add(job.attrs[self.id_param['attr']])
+
+        return job_ids
+
 class LinkedIn(Scraper):
     def __init__(self, db, cache, job_title, location):
         super().__init__(db, cache, job_title, location)
@@ -79,18 +91,6 @@ class Indeed(Scraper):
         self.job_ids = self._get_ids()
         self._scrap_results()
 
-    def _get_ids(self):
-        job_ids = set()
-        content = selenium_content(self.results_page_url)
-        if content.find('div', class_='h-captcha') is not None:
-            print('captcha')
-        else:
-            jobs = content.find_all(self.id_param['tag'], class_=self.id_param['class'])
-            for job in jobs:
-                job_ids.add(job.attrs[self.id_param['attrs']])
-
-        return job_ids
-
     def _scrap_results(self):
         count = 0
         for start in range(0, 100, 10):
@@ -128,17 +128,14 @@ class Monster(Scraper):
         self.extension = links[0]
         self.link = links[1]
 
+        self.results_page_url = f"{links[1]}q={self.job_title}&page=10&geo=0"
+        self.id_param = {
+            'tag'  : 'a',
+            'class': "view-details-link", 
+            'attr' : 'href'}
+
         self.job_ids = self._get_ids()
         self._scrap_results()
-
-    def _get_ids(self):
-        job_ids = set()
-        url = f"{self.link}q={self.job_title}&page=10&geo=0"
-        content = selenium_content(url)
-        jobs = content.find_all('a', class_="view-details-link")
-        for job in jobs:
-            job_ids.add(job.attrs['href'])
-        return job_ids
 
     def _scrap_results(self):
         count = 0
