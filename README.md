@@ -47,6 +47,11 @@ First, check that you are under the project's pip environment (in the terminal, 
 
 - [ ]
 
+### docs:
+models: https://docs.djangoproject.com/en/3.2/topics/db/models/
+
+MVC django: [https://overiq.com/django-1-10/mvc-pattern-and-django/
+
 ### tools:
 google sheet:
 https://docs.google.com/spreadsheets/d/1Xfsz0uhI_YVVBCE_eHCwmJCiLJmIB-jo2uL4WnpD81g/edit?usp=
