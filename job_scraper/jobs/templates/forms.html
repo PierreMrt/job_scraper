@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-sm mx-auto">
+    <h2 class="text-2xl">Forms</h2>
+    <form class="my-6">
+        <fieldset>
+            <legend class="mb-4 text-lg">What type of job are you looking for ?</legend>
+            <div class="my-4 flex flex-col text-sm">
+                <label for="job">Title of the job</label>
+                <input class="border-b-2 border-indigo-500" type="text" id="job">
+            </div>
+            <div class="flex flex-col text-sm">
+                <label for="country">Your country</label>
+                <input class="border-b-2 border-indigo-500" type="text" id="country">
+            </div>
+        </fieldset>
+        <button class="px-4 py-2 bg-green-500 rounded w-full mt-2 text-lg text-white">Search</button>
+    </form>
+</div>
+{% endblock %}
