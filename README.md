@@ -40,12 +40,14 @@ First, check that you are under the project's pip environment (in the terminal, 
 - [x] Create a repository on github
 - [x] Add a main Readme
 - [ ] Plan the different steps of the project
-- [ ] Design the structure of the database
+- [x] Design the structure of the database
 - [ ] 
 
 ### Making of the project
 
-- [ ]
+- [ ] access db
+- [ ] create api
+- [ ] put functions in models
 
 ### docs:
 models: https://docs.djangoproject.com/en/3.2/topics/db/models/
