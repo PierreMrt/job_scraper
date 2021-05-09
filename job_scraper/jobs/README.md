@@ -1,55 +1,15 @@
-# A regarder plus tard
+# Préparer les views pour l'APIView
 
-Regarder le champs ForeignKeys dans la documentation de django
+**On se pose les questions suivantes :**
 
-> category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+1. Quelles sont les informations que l'on souhaite avoir sur la page d'accueil ?
 
+- Résultats d'une recherche par Pays et par type de travail pour plusieurs sites
+- Résultats des recherches passées lorsque l'on est connecté
 
-## SQL commands to convert for Django
+2. Comment accéder à ces informations ?
 
-```sql
--- create search table
-    sql = """CREATE TABLE IF NOT EXISTS search (
-                id integer PRIMARY KEY,
-                user text NOT NULL,
-                job text,
-                country text,
-                search_key text
-            )"""
-    c.execute(sql)
+Si aucune recherche dans la base de donnée ne correspond à ce qui est entré dans le formulaire, on lance le script.
 
--- create links table
-    sql = """CREATE TABLE IF NOT EXISTS links (
-                id integer PRIMARY KEY,
-                country text NOT NULL,
-                extension text,
-                LinkedIn text,
-                Monster text,
-                Indeed text
-            )"""
-    c.execute(sql)
-
--- create users table
-    sql = """CREATE TABLE IF NOT EXISTS users (
-                id integer PRIMARY KEY,
-                username text NOT NULL,
-                mail text,
-                password text
-            )"""
-    c.execute(sql)
-
--- create results table
-    sql = """CREATE TABLE IF NOT EXISTS results (
-                id integer PRIMARY KEY,
-                search_key text NOT NULL,
-                source text,
-                job_id,
-                job_title text,
-                description text,
-                company text,
-                location text,
-                country text,
-                date datetime,
-                link text
-            )"""
-  ```
+Si une recherche est déjà lancée et contient des informations de moins d'un mois, on affiche ses informations
+mais on lance également le script pour ajouter des informations plus fraîches.

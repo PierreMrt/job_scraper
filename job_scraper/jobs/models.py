@@ -1,12 +1,15 @@
 from django.db import models
+# importation de user depuis Django
+from django.contrib.auth.models import User
 
 # Create your models here.
 
-
-class Users(models.Model):
-    username = models.CharField(max_length=255)
-    email = models.CharField(max_length=255)
-    password = models.CharField(max_length=255)
+# Pas besoin de créer la class Users, elle existe déjà
+# avec l'aide de Django
+#class Users(models.Model):
+#    username = models.CharField(max_length=255)
+#    email = models.CharField(max_length=255)
+#    password = models.CharField(max_length=255)
 
 
 class Links(models.Model):
@@ -15,10 +18,13 @@ class Links(models.Model):
     linkedIn = models.CharField(max_length=255)
     monster = models.CharField(max_length=255)
     indeed = models.CharField(max_length=255)
-
+# C'est à cet endroit que l'on ajoute les fonctions pour afficher les infos dans l'API.
 
 class Search(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    ## j'ai importé User des modèles pré-fabriqués de Django
+    ## tous les champs & méthodes sont dans la documentation :
+    ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.CharField(max_length=255)
     country = models.ForeignKey(Links, on_delete=models.CASCADE)
     search_key = models.CharField(max_length=255)
