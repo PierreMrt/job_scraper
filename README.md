@@ -48,11 +48,15 @@ First, check that you are under the project's pip environment (in the terminal, 
 - [ ] access db
 - [ ] create api
 - [ ] put functions in models
+- [ ] update results everyday
+- [ ] host server
 
 ### docs:
 models: https://docs.djangoproject.com/en/3.2/topics/db/models/
 
 MVC django: [https://overiq.com/django-1-10/mvc-pattern-and-django/
+
+Celery: https://docs.celeryproject.org/en/latest/django/first-steps-with-django.html
 
 ### tools:
 google sheet:
