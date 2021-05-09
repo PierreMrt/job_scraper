@@ -2,6 +2,8 @@ from django.db import models
 # importation de user depuis Django
 from django.contrib.auth.models import User
 
+
+
 # Create your models here.
 
 # Pas besoin de créer la class Users, elle existe déjà
@@ -28,6 +30,25 @@ class Search(models.Model):
     job = models.CharField(max_length=255)
     country = models.ForeignKey(Links, on_delete=models.CASCADE)
     search_key = models.CharField(max_length=255)
+
+    def create_new_search(self, job, country):
+        job = self.job.lower()
+        country = self.country.lower()
+
+        self.search_key = f'{job}&&{country}'
+
+        db = SqlConnexion(DB_NAME)
+        actives = get_active_search(db)
+        if self.search_key not in actives:
+            row = ('pierre', job, country, self.search_key)
+            db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
+            scrap(db, job, country)
+        else:
+            print(f'Search for {job} in {country} is already active.')
+
+        # df = db.db_to_panda(search_key)
+        # print(df)
+        db.conn.close()
 
 
 class Results(models.Model):
