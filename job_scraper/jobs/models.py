@@ -5,19 +5,6 @@ from django.utils import timezone
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
 from datetime import datetime
 
-
-
-
-# Create your models here.
-
-# Pas besoin de créer la class Users, elle existe déjà
-# avec l'aide de Django
-#class Users(models.Model):
-#    username = models.CharField(max_length=255)
-#    email = models.CharField(max_length=255)
-#    password = models.CharField(max_length=255)
-
-
 class Links(models.Model):
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
