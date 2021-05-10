@@ -8,45 +8,59 @@ from datetime import date
 
 DATE = date.today().strftime("%d/%m/%Y")
 
-
-class LinkedInScrap:
+class Scraper:
     def __init__(self, db, cache, job_title, location):
-
-        self.parameters = {'keywords': job_title, 'location': location, 'start': 0}
-
         self.db = db
         self.cache = cache
+
         self.location = location
-        self.search_key = f"{job_title}&&{location}"
+        self.job_title = job_title
+
+    def _get_ids(self):
+        job_ids = set()
+        content = selenium_content(self.results_page_url)
+        if content.find('div', class_='h-captcha') is not None:
+            print('captcha')
+        else:
+            jobs = content.find_all(self.id_param['tag'], class_=self.id_param['class'])
+            for job in jobs:
+                job_ids.add(job.attrs[self.id_param['attr']])
+        return job_ids
+
+    def _fetch_details(self, content, job_details):
+        for key, param in job_details.items():
+            try:
+                job_details[key] = content.find(param['tag'], class_=param['class']).text
+            except AttributeError as e:
+                print(e)
+                job_details[key] = ""
+        return job_details
+
+    def _insert_into_table(self, job_details, source, job_id, link):
+        row = (f'{self.job_title}&&{self.location}', source, job_id, job_details['title'], job_details['text'], 
+            job_details['company'], job_details['location'], self.location, DATE, link)
+        statement = 'INSERT INTO results {0} VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'.format(self.db.results_fields)
+        self.db.curr.execute(statement, row)
+        self.db.conn.commit()
+
+
+class LinkedIn(Scraper):
+    def __init__(self, db, cache, job_title, location):
+        super().__init__(db, cache, job_title, location)
+        self.parameters = {'keywords': job_title, 'location': location, 'start': 50}
 
         self.job_ids = self._get_ids()
         self._scrap_results()
 
-    def _bs4_content(self, start):
-        self.parameters['start'] = start
-        url = 'https://www.linkedin.com/jobs/search/?'
-        source = requests.get(url, params=self.parameters)
-        content = BeautifulSoup(source.text, 'html.parser')
-        return content
-
-    def _nb_offers(self):
-        content = self._bs4_content(start=0)
-        nb_offers = content.find('span', class_="results-context-header__new-jobs").text
-        nb_offers = int(''.join(c for c in nb_offers if c.isdigit()))
-        return nb_offers
-
     def _get_ids(self):
-        offers = self._nb_offers()
-        pages = int(offers / 25)
         job_ids = set()
-        for page in range(0, pages):
-            content = self._bs4_content(start=page * 10)
-
-            jobs = content.find('ul', class_="jobs-search__results-list")
-
-            cards = jobs.find_all('li')
-            for card in cards:
-                job_id = card['data-id']
+        for start in range(0, 101, 25):
+            url = f'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords={self.job_title}&location={self.location}&start={start}'
+            content = bs4_content(url)
+            
+            jobs = content.find_all('a', class_="result-card__full-card-link")
+            for job in jobs:
+                job_id = job.attrs['href'].split('/')[5].split('?')[0]
                 job_ids.add(job_id)
 
         return job_ids
@@ -57,56 +71,33 @@ class LinkedInScrap:
         for job_id in self.job_ids:
             if job_id not in self.cache:
                 link = url.format(job_id=job_id)
-                source = requests.get(link)
-                content = BeautifulSoup(source.text, 'html.parser')
-
-                try:
-                    title = content.find('h3', class_="sub-nav-cta__header").text
-                    details = content.find('div', class_="sub-nav-cta__sub-text-container")
-                    company = details.find('a').text
-                    location = details.find('span').text
-                    description = content.find('section', class_="description").text
-                except AttributeError as e:
-                    continue
-
-                row = (self.search_key, 'LinkedIn', job_id, title, description, company, location, self.location,
-                    DATE, link)
-                self.db.insert_into_table(row)
-                self.db.conn.commit()
+                content = bs4_content(link)
+                job_details = {
+                    'title'   : {'tag': 'h3'     , 'class': 'sub-nav-cta__header'},
+                    'company' : {'tag': 'a'      , 'class': 'topcard__org-name-link'},
+                    'location': {'tag': 'span'   , 'class': 'topcard__flavor--bullet'},
+                    'text'    : {'tag': 'section', 'class': 'description'}
+                    }
+                job_details = self._fetch_details(content, job_details)
+                self._insert_into_table(job_details, 'LinkedIn', job_id, link)
                 count += 1
-
         print(f'added {count} offers from LinkedIn')
 
 
-class IndeedScrap:
+class Indeed(Scraper):
     def __init__(self, db, links, cache, job_title, location):
-        self.db = db
-        self.cache = cache
+        super().__init__(db, cache, job_title, location)
 
-        self.extension = links[0]
         self.link = links[2]
 
-        self.job_title = job_title
-        self.location = location
+        self.results_page_url = f"https://{links[0]}.indeed.com/jobs?q={self.job_title}"
+        self.id_param = {
+            'tag'  : 'div',
+            'class': 'job_scraper/obsearch-SerpJobCard', 
+            'attr' : 'data-jk'}
 
         self.job_ids = self._get_ids()
         self._scrap_results()
-
-    def _get_ids(self):
-        job_ids = []
-        url = f"https://{self.extension}.indeed.com/jobs?q={self.job_title}"
-
-        content = selenium_content(url)
-        if content.find('div', class_='h-captcha') is not None:
-            print('captcha')
-
-        else:
-            jobs = content.find_all('div', class_="jobsearch-SerpJobCard")
-
-            for job in jobs:
-                job_ids.append(job.attrs['data-jk'])
-
-        return job_ids
 
     def _scrap_results(self):
         count = 0
@@ -138,45 +129,36 @@ class IndeedScrap:
         print(f'added {count} offers from Indeed')
 
 
-class MonsterScrap:
+class Monster(Scraper):
     def __init__(self, db, links, cache, job_title, location):
-        self.db = db
-        self.cache = cache
+        super().__init__(db, cache, job_title, location)
 
         self.extension = links[0]
-        self.link = links[1]
 
-        self.job_title = job_title
-        self.location = location
+        self.results_page_url = f"{links[1]}q={self.job_title}&page=10&geo=0"
+        self.id_param = {
+            'tag'  : 'a',
+            'class': "view-details-link", 
+            'attr' : 'href'}
 
         self.job_ids = self._get_ids()
         self._scrap_results()
 
-    def _get_ids(self):
-        job_ids = []
-        url = f"{self.link}q={self.job_title}&page=10&geo=0"
-        content = selenium_content(url)
-        jobs = content.find_all('a', class_="view-details-link")
-        for job in jobs:
-            job_ids.append(job.attrs['href'])
-        return job_ids
-
     def _scrap_results(self):
         count = 0
-
         for job_id in self.job_ids:
             if job_id not in self.cache:
-                url = f"https://www.monster.{self.extension}{job_id}"
-                content = bs4_content(url)
-                title = content.find('h1', class_='job_title').text
-                company = content.find('div', class_="job_company_name tag-line").text
-                location = content.find('div', class_='location').text
-                text = content.find('div', class_="job-description").text
+                link = f"https://www.monster.{self.extension}{job_id}"
+                content = bs4_content(link)
 
-                row = (f'{self.job_title}&&{self.location}', 'Monster', job_id, title, text, company, location, self.location,
-                    DATE, url)
-                self.db.insert_into_table(row)
-                self.db.conn.commit()
+                job_details = {
+                    'title'   : {'tag': 'h1' , 'class': 'job_title'},
+                    'company' : {'tag': 'div', 'class': 'job_company_name tag-line'},
+                    'location': {'tag': 'div', 'class': 'location'},
+                    'text'    : {'tag': 'div', 'class': 'job-description'}
+                    }
+                job_details = self._fetch_details(content, job_details)
+                self._insert_into_table(job_details, 'LinkedIn', job_id, link)
                 count += 1
 
         print(f'added {count} offers from Monster')
@@ -198,8 +180,5 @@ def bs4_content(url):
     content = BeautifulSoup(source.text, 'html.parser')
     return content
 
-
 if __name__ == '__main__':
-    scrap = MonsterScrap(None, 'data_analyst', 'italy')
-    # print(scrap.job_ids)
-    # print(len(scrap.job_ids))
+    LinkedIn(None, [], 'data_analyst', 'france')

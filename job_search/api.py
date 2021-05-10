@@ -15,7 +15,8 @@ def search_keywords(search_key, keywords):
     return results
 
 if __name__ == '__main__':
-    search_key = 'data_analyst&&france'
-    kw = ['python', 'sql']
+    search_key = 'biologist&&italy'
+    kw = ['laboratorio', 'farma']
     results = search_keywords(search_key, kw)
-    print(results)
+    for r in results:
+        print(r[10])
