@@ -32,7 +32,6 @@ class Scraper:
             try:
                 job_details[key] = content.find(param['tag'], class_=param['class']).text
             except AttributeError as e:
-                print(e)
                 job_details[key] = ""
         return job_details
 
