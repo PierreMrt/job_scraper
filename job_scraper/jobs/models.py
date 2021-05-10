@@ -2,7 +2,7 @@ from django.db import models
 # importation de user depuis Django
 from django.contrib.auth.models import User
 from django.utils import timezone
-from jobs.libs.scraping import LinkedIn, Monster, Indeed
+# from jobs.libs.scraping import LinkedIn, Monster, Indeed
 from datetime import datetime
 
 class Links(models.Model):
@@ -92,5 +92,5 @@ class Results(models.Model):
         return cached_ids
 
 def main():
-    s = Search(user='pierre', job='data_analyst', country='france')
+    s = Search(user, job, country)
     s.new_search()
