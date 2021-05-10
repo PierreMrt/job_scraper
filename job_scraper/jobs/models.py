@@ -1,21 +1,8 @@
 from django.db import models
-# importation de user depuis Django
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
-from datetime import datetime
-
-
-
-
-# Create your models here.
-
-# Pas besoin de créer la class Users, elle existe déjà
-# avec l'aide de Django
-#class Users(models.Model):
-#    username = models.CharField(max_length=255)
-#    email = models.CharField(max_length=255)
-#    password = models.CharField(max_length=255)
 
 
 class Links(models.Model):
@@ -31,7 +18,8 @@ class Links(models.Model):
 
     @staticmethod
     def populate():
-        links = [('italy', 'it', 'www.linkedin.com', 'https://www.monster.it/lavoro/cerca?', 'https://it.indeed.com/offerta-lavoro?'),
+        links = [
+            ('italy', 'it', 'www.linkedin.com', 'https://www.monster.it/lavoro/cerca?', 'https://it.indeed.com/offerta-lavoro?'),
             ('france', 'fr', 'www.linkedin.com', 'https://www.monster.fr/emploi/recherche?', 'https://fr.indeed.com/voir-emploi?'),
             ('uruguay', 'uy', 'www.linkedin.com', 'None', 'https://uy.indeed.com/descripción-del-puesto?'),
             ('austria', 'at', 'www.linkedin.com', 'https://www.monster.at/jobs/suche?', 'https://at.indeed.com/Zeige-Job?')]
@@ -42,9 +30,6 @@ class Links(models.Model):
 
 
 class Search(models.Model):
-    ## j'ai importé User des modèles pré-fabriqués de Django
-    ## tous les champs & méthodes sont dans la documentation :
-    ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
     user = models.CharField(max_length=255)
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
@@ -57,7 +42,7 @@ class Search(models.Model):
         actives = self.active_search()
         if self.search_key not in actives:
             self.save()
-            print('added to db')
+            print(f'{self.search_key} added to searches')
             Results().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
