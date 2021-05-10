@@ -26,29 +26,26 @@ class Search(models.Model):
     ## j'ai importé User des modèles pré-fabriqués de Django
     ## tous les champs & méthodes sont dans la documentation :
     ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.CharField(max_length=255)
     job = models.CharField(max_length=255)
-    country = models.ForeignKey(Links, on_delete=models.CASCADE)
-    search_key = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
 
-    def create_new_search(self, job, country):
-        job = self.job.lower()
-        country = self.country.lower()
+    @property
+    def search_key(self):
+        return f'{self.job.lower()}&&{self.country.lower()}'
 
-        self.search_key = f'{job}&&{country}'
-
-        db = SqlConnexion(DB_NAME)
-        actives = get_active_search(db)
+    def new_search(self):
+        actives = self.active_search()
         if self.search_key not in actives:
-            row = ('pierre', job, country, self.search_key)
-            db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
-            scrap(db, job, country)
+            self.save()
+            print('added to db')
         else:
-            print(f'Search for {job} in {country} is already active.')
-
-        # df = db.db_to_panda(search_key)
-        # print(df)
-        db.conn.close()
+            print(f'Search for {self.job} in {self.country} is already active.')
+        
+    def active_search(self):
+        actives = set()
+        [actives.add(s.search_key) for s in Search.objects.all()]
+        return actives
 
 
 class Results(models.Model):
