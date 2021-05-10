@@ -55,6 +55,7 @@ class Search(models.Model):
         return actives
 
 
+
 class Results(models.Model):
     search_key = models.CharField(max_length=255)
     source = models.CharField(max_length=255)
