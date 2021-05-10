@@ -40,15 +40,12 @@ class Search(models.Model):
         db = SqlConnexion(DB_NAME)
         actives = get_active_search(db)
         if self.search_key not in actives:
-            row = ('pierre', job, country, self.search_key)
+            row = (self.user, job, country, self.search_key)
             db.curr.execute("INSERT INTO search values (NULL, ?, ?, ?, ?)", row)
             scrap(db, job, country)
         else:
             print(f'Search for {job} in {country} is already active.')
 
-        # df = db.db_to_panda(search_key)
-        # print(df)
-        db.conn.close()
 
 
 class Results(models.Model):
