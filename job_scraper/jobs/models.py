@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
 
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
 
@@ -94,9 +93,9 @@ class Results(models.Model):
         for r in indeed.results:
             self.add_results(r)
 
-        # monster = Monster(links, cache, job, country)
-        # for r in monster.results:
-        #     self.add_results(r)
+        monster = Monster(links, cache, job, country)
+        for r in monster.results:
+            self.add_results(r)
 
     def cached_ids(self):
         cached_ids = set()
