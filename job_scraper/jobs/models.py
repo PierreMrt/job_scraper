@@ -38,6 +38,12 @@ class Search(models.Model):
     def search_key(self):
         return f'{self.job.lower()}&&{self.country.lower()}'
 
+    @staticmethod
+    def split_search_key(search_key):
+        s = search_key.split('&&')
+        return s[0], s[1]
+        
+
     def new_search(self):
         actives = self.active_search()
         if self.search_key not in actives:
@@ -51,6 +57,11 @@ class Search(models.Model):
         actives = set()
         [actives.add(s.search_key) for s in Search.objects.all()]
         return actives
+
+    def update(self):
+        for active in self.active_search():
+            job, country = self.split_search_key(active)
+            Results().scrap(job, country)
 
 
 class Results(models.Model):
@@ -75,12 +86,17 @@ class Results(models.Model):
         links = Links().fetch(country)
         cache = self.cached_ids()
 
-        linkedin = LinkedIn(cache, job, country)
-        for r in linkedin.results:
+        # linkedin = LinkedIn(cache, job, country)
+        # for r in linkedin.results:
+        #     self.add_results(r)
+
+        indeed = Indeed(links, cache, job, country)
+        for r in indeed.results:
             self.add_results(r)
 
-        # Indeed(links, cache, job, country)
-        # Monster(links, cache, job, country)
+        # monster = Monster(links, cache, job, country)
+        # for r in monster.results:
+        #     self.add_results(r)
 
     def cached_ids(self):
         cached_ids = set()
@@ -89,5 +105,6 @@ class Results(models.Model):
         return cached_ids
 
 def main():
-    s = Search(user='pierre', job='data_analyst', country='france')
-    s.new_search()
+    # s = Search(user='pierre', job='data_analyst', country='italy')
+    # s.new_search()
+    Search().update()
