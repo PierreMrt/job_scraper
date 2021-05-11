@@ -2,7 +2,7 @@ from django.db import models
 # importation de user depuis Django
 from django.contrib.auth.models import User
 from django.utils import timezone
-# from jobs.libs.scraping import LinkedIn, Monster, Indeed
+#from jobs.libs.scraping import LinkedIn, Monster, Indeed
 from datetime import datetime
 
 class Links(models.Model):

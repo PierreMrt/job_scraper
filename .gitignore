@@ -6,3 +6,4 @@ env_3_7_3
 secrets.json
 .idea
 __pycache__
+db.sqlite3
