@@ -7,11 +7,6 @@ from datetime import datetime
 
 class Links(models.Model):
 =======
-
-from jobs.libs.scraping import LinkedIn, Monster, Indeed
-
-
-class Link(models.Model):
 >>>>>>> models
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
@@ -20,13 +15,8 @@ class Link(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
-<<<<<<< HEAD
         # ERROR in next line: list index out of range
         links = Links.objects.filter(country=country)[0]
-        print(links)
-=======
-        links = Link.objects.filter(country=country)[0]
->>>>>>> models
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
@@ -43,14 +33,10 @@ class Link(models.Model):
 
 
 class Search(models.Model):
-<<<<<<< HEAD
     ## j'ai importé User des modèles pré-fabriqués de Django
     ## tous les champs & méthodes sont dans la documentation :
     ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-=======
-    user = models.CharField(max_length=255)
->>>>>>> models
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
@@ -125,11 +111,5 @@ class Result(models.Model):
         return cached_ids
 
 def main():
-<<<<<<< HEAD
     s = Search(0, job, country)
     s.new_search()
-=======
-    # s = Search(user='pierre', job='data_analyst', country='italy')
-    # s.new_search()
-    Search().update()
->>>>>>> models
