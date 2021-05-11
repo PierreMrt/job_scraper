@@ -93,5 +93,5 @@ class Results(models.Model):
         return cached_ids
 
 def main():
-    s = Search(user, job, country)
+    s = Search(0, job, country)
     s.new_search()
