@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Links, Search, Results
+from .models import Link, Search, Result
 
-admin.site.register(Links)
+admin.site.register(Link)
 admin.site.register(Search)
-admin.site.register(Results)
+admin.site.register(Result)

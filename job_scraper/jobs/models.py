@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
 
 
-class Links(models.Model):
+class Link(models.Model):
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
     linkedIn = models.CharField(max_length=255)
@@ -12,7 +12,7 @@ class Links(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
-        links = Links.objects.filter(country=country)[0]
+        links = Link.objects.filter(country=country)[0]
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
@@ -24,7 +24,7 @@ class Links(models.Model):
             ('austria', 'at', 'www.linkedin.com', 'https://www.monster.at/jobs/suche?', 'https://at.indeed.com/Zeige-Job?')]
         
         for r in links:
-            l = Links(country=r[0], extension=r[1], linkedIn=r[2], monster=r[3], indeed=r[4])
+            l = Link(country=r[0], extension=r[1], linkedIn=r[2], monster=r[3], indeed=r[4])
             l.save()
 
 
@@ -48,7 +48,7 @@ class Search(models.Model):
         if self.search_key not in actives:
             self.save()
             print(f'{self.search_key} added to searches')
-            Results().scrap(self.job, self.country)
+            Result().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
         
@@ -60,10 +60,10 @@ class Search(models.Model):
     def update(self):
         for active in self.active_search():
             job, country = self.split_search_key(active)
-            Results().scrap(job, country)
+            Result().scrap(job, country)
 
 
-class Results(models.Model):
+class Result(models.Model):
     search_key = models.CharField(max_length=255)
     source = models.CharField(max_length=255)
     job_id = models.CharField(max_length=255)
@@ -75,32 +75,32 @@ class Results(models.Model):
     date = models.DateTimeField()
     link = models.CharField(max_length=255)
 
-    def add_results(self, r):
-        new_entry = Results(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
+    def add_Result(self, r):
+        new_entry = Result(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
                             description=r['description'], company=r['company'], location=r['location'],
                             country=r['country'], date=r['date'], link=r['link'])
         new_entry.save()
 
     def scrap(self, job, country):
-        links = Links().fetch(country)
+        links = Link().fetch(country)
         cache = self.cached_ids()
 
-        # linkedin = LinkedIn(cache, job, country)
-        # for r in linkedin.results:
-        #     self.add_results(r)
+        linkedin = LinkedIn(cache, job, country)
+        for r in linkedin.Result:
+            self.add_Result(r)
 
-        indeed = Indeed(links, cache, job, country)
-        for r in indeed.results:
-            self.add_results(r)
+        # indeed = Indeed(links, cache, job, country)
+        # for r in indeed.Result:
+        #     self.add_Result(r)
 
         monster = Monster(links, cache, job, country)
-        for r in monster.results:
-            self.add_results(r)
+        for r in monster.Result:
+            self.add_Result(r)
 
     def cached_ids(self):
         cached_ids = set()
-        results = Results.objects.all()
-        [cached_ids.add(r.job_id) for r in results]
+        Result = Result.objects.all()
+        [cached_ids.add(r.job_id) for r in Result]
         return cached_ids
 
 def main():

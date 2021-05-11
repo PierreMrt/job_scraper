@@ -113,8 +113,8 @@ class Indeed(Scraper):
 
             for job_id in self.job_ids:
                 if job_id not in self.cache:
-                    url = f"{self.link}jk={job_id}&start={start}"
-                    content = bs4_content(url)
+                    link = f"{self.link}jk={job_id}&start={start}"
+                    content = bs4_content(link)
 
                     job_details = {
                         'title': {'tag': 'div', 'class': 'jobsearch-JobInfoHeader-title-container'},
@@ -187,6 +187,11 @@ class Monster(Scraper):
 def selenium_content(url):
     options = Options()
     options.add_argument("--headless")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0")
+
+    # PROXY = "http://52.151.15.4:80"
+    # options.add_argument('--proxy-server=%s' % PROXY)
+
     driver = webdriver.Chrome(options=options)
     driver.get(url)
     time.sleep(8)
