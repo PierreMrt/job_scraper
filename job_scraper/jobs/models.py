@@ -1,13 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-<<<<<<< HEAD
-from django.utils import timezone
-#from jobs.libs.scraping import LinkedIn, Monster, Indeed
-from datetime import datetime
+from jobs.libs.scraping import LinkedIn, Monster, Indeed
 
-class Links(models.Model):
-=======
->>>>>>> models
+
+class Link(models.Model):
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
     linkedIn = models.CharField(max_length=255)
@@ -15,8 +11,9 @@ class Links(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
-        # ERROR in next line: list index out of range
-        links = Links.objects.filter(country=country)[0]
+        print(country)
+        links = Link.objects.filter(country=country)
+        print(links)
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
@@ -33,10 +30,7 @@ class Links(models.Model):
 
 
 class Search(models.Model):
-    ## j'ai importé User des modèles pré-fabriqués de Django
-    ## tous les champs & méthodes sont dans la documentation :
-    ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.CharField(max_length=255)
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
@@ -111,5 +105,6 @@ class Result(models.Model):
         return cached_ids
 
 def main():
-    s = Search(0, job, country)
-    s.new_search()
+    # s = Search(user='pierre', job='data_analyst', country='italy')
+    # s.new_search()
+    Search().update()
