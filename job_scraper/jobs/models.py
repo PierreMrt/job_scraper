@@ -13,8 +13,9 @@ class Links(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
-        # ERROR: list index out of range
+        # ERROR in next line: list index out of range
         links = Links.objects.filter(country=country)[0]
+        print(links)
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
@@ -33,7 +34,7 @@ class Search(models.Model):
     ## j'ai importé User des modèles pré-fabriqués de Django
     ## tous les champs & méthodes sont dans la documentation :
     ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
-    user = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
@@ -54,7 +55,6 @@ class Search(models.Model):
         actives = set()
         [actives.add(s.search_key) for s in Search.objects.all()]
         return actives
-
 
 
 class Results(models.Model):
