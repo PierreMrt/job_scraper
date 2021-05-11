@@ -1,11 +1,18 @@
 from django.db import models
-# importation de user depuis Django
 from django.contrib.auth.models import User
+<<<<<<< HEAD
 from django.utils import timezone
 #from jobs.libs.scraping import LinkedIn, Monster, Indeed
 from datetime import datetime
 
 class Links(models.Model):
+=======
+
+from jobs.libs.scraping import LinkedIn, Monster, Indeed
+
+
+class Link(models.Model):
+>>>>>>> models
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
     linkedIn = models.CharField(max_length=255)
@@ -13,28 +20,37 @@ class Links(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
+<<<<<<< HEAD
         # ERROR in next line: list index out of range
         links = Links.objects.filter(country=country)[0]
         print(links)
+=======
+        links = Link.objects.filter(country=country)[0]
+>>>>>>> models
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
     def populate():
-        links = [('italy', 'it', 'www.linkedin.com', 'https://www.monster.it/lavoro/cerca?', 'https://it.indeed.com/offerta-lavoro?'),
+        links = [
+            ('italy', 'it', 'www.linkedin.com', 'https://www.monster.it/lavoro/cerca?', 'https://it.indeed.com/offerta-lavoro?'),
             ('france', 'fr', 'www.linkedin.com', 'https://www.monster.fr/emploi/recherche?', 'https://fr.indeed.com/voir-emploi?'),
             ('uruguay', 'uy', 'www.linkedin.com', 'None', 'https://uy.indeed.com/descripción-del-puesto?'),
             ('austria', 'at', 'www.linkedin.com', 'https://www.monster.at/jobs/suche?', 'https://at.indeed.com/Zeige-Job?')]
         
         for r in links:
-            l = Links(country=r[0], extension=r[1], linkedIn=r[2], monster=r[3], indeed=r[4])
+            l = Link(country=r[0], extension=r[1], linkedIn=r[2], monster=r[3], indeed=r[4])
             l.save()
 
 
 class Search(models.Model):
+<<<<<<< HEAD
     ## j'ai importé User des modèles pré-fabriqués de Django
     ## tous les champs & méthodes sont dans la documentation :
     ## https://docs.djangoproject.com/fr/3.1/ref/contrib/auth/
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+=======
+    user = models.CharField(max_length=255)
+>>>>>>> models
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
@@ -42,12 +58,18 @@ class Search(models.Model):
     def search_key(self):
         return f'{self.job.lower()}&&{self.country.lower()}'
 
+    @staticmethod
+    def split_search_key(search_key):
+        s = search_key.split('&&')
+        return s[0], s[1]
+        
+
     def new_search(self):
         actives = self.active_search()
         if self.search_key not in actives:
             self.save()
-            print('added to db')
-            Results().scrap(self.job, self.country)
+            print(f'{self.search_key} added to searches')
+            Result().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
         
@@ -56,8 +78,13 @@ class Search(models.Model):
         [actives.add(s.search_key) for s in Search.objects.all()]
         return actives
 
+    def update(self):
+        for active in self.active_search():
+            job, country = self.split_search_key(active)
+            Result().scrap(job, country)
 
-class Results(models.Model):
+
+class Result(models.Model):
     search_key = models.CharField(max_length=255)
     source = models.CharField(max_length=255)
     job_id = models.CharField(max_length=255)
@@ -69,29 +96,40 @@ class Results(models.Model):
     date = models.DateTimeField()
     link = models.CharField(max_length=255)
 
-    def add_results(self, r):
-        new_entry = Results(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
+    def add_Result(self, r):
+        new_entry = Result(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
                             description=r['description'], company=r['company'], location=r['location'],
                             country=r['country'], date=r['date'], link=r['link'])
         new_entry.save()
 
     def scrap(self, job, country):
-        links = Links().fetch(country)
+        links = Link().fetch(country)
         cache = self.cached_ids()
 
         linkedin = LinkedIn(cache, job, country)
-        for r in linkedin.results:
-            self.add_results(r)
+        for r in linkedin.Result:
+            self.add_Result(r)
 
-        # Indeed(links, cache, job, country)
-        # Monster(links, cache, job, country)
+        # indeed = Indeed(links, cache, job, country)
+        # for r in indeed.Result:
+        #     self.add_Result(r)
+
+        monster = Monster(links, cache, job, country)
+        for r in monster.Result:
+            self.add_Result(r)
 
     def cached_ids(self):
         cached_ids = set()
-        results = Results.objects.all()
-        [cached_ids.add(r.job_id) for r in results]
+        Result = Result.objects.all()
+        [cached_ids.add(r.job_id) for r in Result]
         return cached_ids
 
 def main():
-    s = Search(user, job, country)
+<<<<<<< HEAD
+    s = Search(0, job, country)
     s.new_search()
+=======
+    # s = Search(user='pierre', job='data_analyst', country='italy')
+    # s.new_search()
+    Search().update()
+>>>>>>> models

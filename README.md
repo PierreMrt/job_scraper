@@ -35,21 +35,12 @@ The following steps will assume that you are using the Windows Command Line.
 First, check that you are under the project's pip environment (in the terminal, you should have (env_3_9_2) at the left of your current foler position). Then, just run `pip install <your-library>`. It should be installed for the whole project. To know which version of the package you have write `pip freeze` and copy/paste the returned result in `requirements.txt`.
 
 ## :white_check_mark: Task list
-### :rocket: Setting up the projet
 
-- [x] Create a repository on github
-- [x] Add a main Readme
-- [ ] Plan the different steps of the project
-- [x] Design the structure of the database
-- [ ] 
-
-### Making of the project
-
-- [ ] access db
 - [ ] create api
-- [ ] put functions in models
-- [ ] update results everyday
-- [ ] host server
+- [ ] manage captcha for indeed and fix scrap
+- [ ] frontend
+- [ ] update results everyday (cf celery)
+- [ ] host serverS
 
 ### docs:
 models: https://docs.djangoproject.com/en/3.2/topics/db/models/

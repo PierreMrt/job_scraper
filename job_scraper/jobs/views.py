@@ -7,8 +7,13 @@ from rest_framework.decorators import api_view
 # importing user model
 from django.contrib.auth.models import User
 
+<<<<<<< HEAD
 from .models import Links, Search, Results
 #from .serializers import ProductSerializer, CategorySerializer
+=======
+from .models import Link, Search, Result
+# from .serializers import ProductSerializer, CategorySerializer
+>>>>>>> 9ec63b93746965e82df8dc87452000d11ca97586
 
 from .forms import NameForm
 from django.shortcuts import render
@@ -25,6 +30,10 @@ def get_job(request):
             # here we need to pass the data to the model's methods
             job = job.replace(" ", "_").lower()
             country = country.replace(" ", "_").lower()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9ec63b93746965e82df8dc87452000d11ca97586
             s = Search(0, job, country)
             s.new_search()
 
