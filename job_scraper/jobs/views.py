@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 # importing user model
 from django.contrib.auth.models import User
 
-from .models import Links, Search, Results
+from .models import Link, Search, Result
 # from .serializers import ProductSerializer, CategorySerializer
 
 from .forms import NameForm
