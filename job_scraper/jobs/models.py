@@ -13,6 +13,7 @@ class Links(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
+        # ERROR: list index out of range
         links = Links.objects.filter(country=country)[0]
         return (links.extension, links.monster, links.indeed)
 

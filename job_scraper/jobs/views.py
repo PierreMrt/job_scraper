@@ -25,7 +25,8 @@ def get_job(request):
             # here we need to pass the data to the model's methods
             job = job.replace(" ", "_").lower()
             country = country.replace(" ", "_").lower()
-            Search('admin', job, country)
+            s = Search(1, job, country)
+            s.new_search()
 
     # if a GET (or any other method) we'll create a blank form
     else:
