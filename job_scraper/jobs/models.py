@@ -11,9 +11,7 @@ class Link(models.Model):
     indeed = models.CharField(max_length=255)
 
     def fetch(self, country):
-        print(country)
-        links = Link.objects.filter(country=country)
-        print(links)
+        links = Link.objects.get(country=country)
         return (links.extension, links.monster, links.indeed)
 
     @staticmethod
@@ -76,7 +74,7 @@ class Result(models.Model):
     date = models.DateTimeField()
     link = models.CharField(max_length=255)
 
-    def add_Result(self, r):
+    def add_result(self, r):
         new_entry = Result(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
                             description=r['description'], company=r['company'], location=r['location'],
                             country=r['country'], date=r['date'], link=r['link'])
@@ -87,21 +85,21 @@ class Result(models.Model):
         cache = self.cached_ids()
 
         linkedin = LinkedIn(cache, job, country)
-        for r in linkedin.Result:
-            self.add_Result(r)
+        for r in linkedin.results:
+            self.add_result(r)
 
         # indeed = Indeed(links, cache, job, country)
-        # for r in indeed.Result:
-        #     self.add_Result(r)
+        # for r in indeed.results:
+        #     self.add_result(r)
 
         monster = Monster(links, cache, job, country)
-        for r in monster.Result:
-            self.add_Result(r)
+        for r in monster.results:
+            self.add_result(r)
 
     def cached_ids(self):
         cached_ids = set()
-        Result = Result.objects.all()
-        [cached_ids.add(r.job_id) for r in Result]
+        result = Result.objects.all()
+        [cached_ids.add(r.job_id) for r in result]
         return cached_ids
 
 def main():
