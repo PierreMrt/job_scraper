@@ -43,7 +43,7 @@ class Search(models.Model):
         
 
     def new_search(self):
-        actives = self.active_search()
+        actives = [s.search_key for s in self.active_search()]
         if self.search_key not in actives:
             self.save()
             print(f'{self.search_key} added to searches')
@@ -53,12 +53,12 @@ class Search(models.Model):
         
     def active_search(self):
         actives = set()
-        [actives.add(s.search_key) for s in Search.objects.all()]
+        [actives.add(s) for s in Search.objects.all()]
         return actives
 
     def update(self):
         for active in self.active_search():
-            job, country = self.split_search_key(active)
+            job, country = self.split_search_key(active.search_key)
             Result().scrap(job, country)
 
 
@@ -101,6 +101,9 @@ class Result(models.Model):
         result = Result.objects.all()
         [cached_ids.add(r.job_id) for r in result]
         return cached_ids
+
+    def return_results(self, search_key):
+        return Result.objects.filter(search_key=search_key)
 
 def main():
     # s = Search(user='pierre', job='data_analyst', country='italy')

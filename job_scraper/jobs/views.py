@@ -12,6 +12,7 @@ from .models import Link, Search, Result
 
 from .forms import NameForm
 from django.shortcuts import render
+from django.http import HttpResponse
 
 def get_job(request):
     if request.method == 'POST':
@@ -41,3 +42,16 @@ def update_search(request):
     Search().update()
 
     return render(request, 'update.html')
+
+def show_searches(request):
+    searches = Search().active_search()
+    search_dict = {}
+    for i, search  in enumerate(searches):
+        search_dict[i] = {
+            'search_key': search.search_key,
+            'job': search.job,
+            'country': search.country,
+            'count': len(Result().return_results(search.search_key))}
+    print(search_dict)
+    
+    return render(request, 'searches.html', {'context': search_dict})

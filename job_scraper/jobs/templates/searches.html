@@ -25,18 +25,19 @@
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
         <div>
             <ul class="flex flew-row flex-wrap">
-                <li class="ml-4"><a href="/searches">Active searches</a></li>
-                <li class="ml-4"><a href="#">My Account</a></li>
+                <li class="ml-4"><a href="/">Home</a></li>
             </ul>
         </div>
     </nav>
 
-    <div id="main" class="mx-4 mt-8">
-        {% block update %}{% endblock %}
-    </div>
-
-    <div id="update" class="mx-4 mt-8">
-        {% block content %}{% endblock %}
+    <div class="max-w-sm mx-auto mt-32">
+        <h2 class="text-2xl text-green-700 text-center mb-8">Searches currently active:</h2>
+        <div class="p-4 space-y-4 bg-green-300 bg-stripes bg-stripes-white rounded-md">
+            {% for k, v in context.items %}
+                <span class="block rounded-md text-white font-extrabold text-center bg-green-500 p-6">{{ v.job }} in {{v.country}}:<br>
+                {{v.count}} results</span>
+            {% endfor %}
+          </div>        
     </div>
 
     <script src="" async defer></script>
