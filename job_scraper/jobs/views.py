@@ -34,3 +34,10 @@ def get_job(request):
         form = NameForm()
 
     return render(request, 'forms.html', {'form': form})
+
+def update_search(request):
+    print('updating active searches')
+
+    Search().update()
+
+    return render(request, 'update.html')

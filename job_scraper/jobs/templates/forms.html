@@ -18,3 +18,12 @@
     </form>
 </div>
 {% endblock %}
+
+{% block update %}
+<div class="max-w-sm mx-auto">
+    <form action="/update" method="post">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 bg-green-500 rounded w-full mt-2 text-lg text-white cursor-pointer" value='update'>Update all searches</button>
+     </form>
+</div>
+{% endblock %}
