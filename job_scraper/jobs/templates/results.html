@@ -25,20 +25,22 @@
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
         <div>
             <ul class="flex flew-row flex-wrap">
+                <li class="ml-4"><a href="/searches">Active searches</a></li>
                 <li class="ml-4"><a href="/">Home</a></li>
             </ul>
         </div>
     </nav>
 
-    <div class="max-w-sm mx-auto mt-32">
-        <h2 class="text-2xl text-green-700 text-center mb-8">Searches currently active:</h2>
-        <div class="p-4 space-y-4 bg-green-300 bg-stripes bg-stripes-white rounded-md">
-            {% for k, v in context.items %}
-                <a href=/results/{{v.search_key}} class="block rounded-md text-white font-extrabold text-center bg-green-500 p-6 hover:underline">
-                    {{ v.job }} in {{v.country}}:<br>
-                    {{v.count}} results</a>
+    <div class="max-w-screen-lg mx-auto mt-32">
+        <h2 class="text-2xl text-green-700 font-extrabold text-center mb-8">Results for {{results.0.search_key}}:</h2>
+        <div class="p-2 space-y-2 bg-green-300 bg-stripes bg-stripes-white rounded-md">
+            {% for result in results %}
+                <span class="block rounded-md text-white text-center bg-green-500 p-6">
+                    {{result.job_title}}: in {{result.location}} for {{result.company}}<br>
+                    <a href={{result.link}} class='no-underline text-red-500 hover:underline'>Link</a>
+                </span>
             {% endfor %}
-        </div>        
+          </div>        
     </div>
 
     <script src="" async defer></script>

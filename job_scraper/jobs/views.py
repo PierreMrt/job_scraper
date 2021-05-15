@@ -55,3 +55,7 @@ def show_searches(request):
     print(search_dict)
     
     return render(request, 'searches.html', {'context': search_dict})
+    
+def show_results(request, search_key):
+    results = Result().return_results(search_key)
+    return render(request, 'results.html', {'results': results})
