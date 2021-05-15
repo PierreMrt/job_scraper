@@ -49,7 +49,7 @@ def show_searches(request):
     for i, search  in enumerate(searches):
         search_dict[i] = {
             'search_key': search.search_key,
-            'job': search.job,
+            'job': search.job.replace('_', ' '),
             'country': search.country,
             'count': len(Result().return_results(search.search_key))}
     print(search_dict)
@@ -57,5 +57,12 @@ def show_searches(request):
     return render(request, 'searches.html', {'context': search_dict})
     
 def show_results(request, search_key):
-    results = Result().return_results(search_key)
+    job = search_key.split('&&')[0].replace('_', ' ')
+    country = search_key.split('&&')[1]
+    results = {}
+    results['info'] = {
+        'search_key': search_key,
+        'job': job,
+        'country': country}
+    results['list'] = Result().return_results(search_key)
     return render(request, 'results.html', {'results': results})
