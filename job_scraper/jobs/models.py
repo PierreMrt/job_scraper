@@ -2,13 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
 
-
 class Link(models.Model):
     country = models.CharField(max_length=255)
     extension = models.CharField(max_length=255)
     linkedIn = models.CharField(max_length=255)
     monster = models.CharField(max_length=255)
     indeed = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.country
 
     def fetch(self, country):
         links = Link.objects.get(country=country)
@@ -32,6 +34,9 @@ class Search(models.Model):
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.search_key
+
     @property
     def search_key(self):
         return f'{self.job.lower()}&&{self.country.lower()}'
@@ -40,16 +45,16 @@ class Search(models.Model):
     def split_search_key(search_key):
         s = search_key.split('&&')
         return s[0], s[1]
-        
 
     def new_search(self):
         actives = [s.search_key for s in self.active_search()]
         if self.search_key not in actives:
             self.save()
             print(f'{self.search_key} added to searches')
-            Result().scrap(self.job, self.country)
+            Search().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
+            Search().scrap(self.job, self.country)
         
     def active_search(self):
         actives = set()
@@ -59,23 +64,12 @@ class Search(models.Model):
     def update(self):
         for active in self.active_search():
             job, country = self.split_search_key(active.search_key)
-            Result().scrap(job, country)
-
-
-class Result(models.Model):
-    search_key = models.CharField(max_length=255)
-    source = models.CharField(max_length=255)
-    job_id = models.CharField(max_length=255)
-    job_title = models.CharField(max_length=255)
-    description = models.TextField()
-    company = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
-    country = models.CharField(max_length=255)
-    date = models.DateTimeField()
-    link = models.CharField(max_length=255)
+            Search().scrap(job, country)
 
     def add_result(self, r):
-        new_entry = Result(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
+        search = Search.objects.all()
+        print(search)
+        new_entry = search.result_set.create(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
                             description=r['description'], company=r['company'], location=r['location'],
                             country=r['country'], date=r['date'], link=r['link'])
         new_entry.save()
@@ -105,7 +99,24 @@ class Result(models.Model):
     def return_results(self, search_key):
         return Result.objects.filter(search_key=search_key)
 
-def main():
-    # s = Search(user='pierre', job='data_analyst', country='italy')
-    # s.new_search()
-    Search().update()
+
+class Result(models.Model):
+    search_key = models.CharField(max_length=255)
+    search = models.ForeignKey(Search, on_delete=models.CASCADE)
+    source = models.CharField(max_length=255, null=True, blank=True)
+    job_id = models.CharField(max_length=255, null=True, blank=True)
+    job_title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    company = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateTimeField(null=True, blank=True)
+    link = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.search_key
+
+# def main():
+#     # s = Search(user='pierre', job='data_analyst', country='italy')
+#     # s.new_search()
+#     # Search().update()

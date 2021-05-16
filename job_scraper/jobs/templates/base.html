@@ -32,11 +32,19 @@
     </nav>
 
     <div id="main" class="mx-4 mt-8">
-        {% block update %}{% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <div id="update" class="mx-4 mt-8">
-        {% block content %}{% endblock %}
+        {% block update %}{% endblock %}
+    </div>
+
+    <div id="searches" class="mx-4 mt-8">
+        {% block searches %}{% endblock %}
+    </div>
+
+    <div id="searches-class" class="mx-4 mt-8">
+        {% block searches_class %}{% endblock %}
     </div>
 
     <script src="" async defer></script>

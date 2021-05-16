@@ -1,0 +1,45 @@
+[{
+        "model": "jobs.link",
+        "pk": 1,
+        "fields": {
+            "country": "italy",
+            "extension": "it",
+            "linkedIn": "www.linkedin.com",
+            "monster": "https://www.monster.it/lavoro/cerca?",
+            "indeed": "https://it.indeed.com/offerta-lavoro?"
+        }
+    },
+    {
+        "model": "jobs.link",
+        "pk": 2,
+        "fields": {
+            "country": "france",
+            "extension": "fr",
+            "linkedIn": "www.linkedin.com",
+            "monster": "https://www.monster.fr/emploi/recherche?",
+            "indeed": "https://fr.indeed.com/voir-emploi?"
+        }
+    },
+    {
+        "model": "jobs.link",
+        "pk": 3,
+        "fields": {
+            "country": "uruguay",
+            "extension": "uy",
+            "linkedIn": "www.linkedin.com",
+            "monster": "None",
+            "indeed": "https://uy.indeed.com/descripción-del-puesto?"
+        }
+    },
+    {
+        "model": "jobs.link",
+        "pk": 4,
+        "fields": {
+            "country": "austria",
+            "extension": "at",
+            "linkedIn": "www.linkedin.com",
+            "monster": "https://www.monster.at/jobs/suche?",
+            "indeed": "https://at.indeed.com/Zeige-Job?"
+        }
+    }
+]

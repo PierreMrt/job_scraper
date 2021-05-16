@@ -58,4 +58,15 @@ db diagram:
 https://dbdiagram.io/d/608bd65fb29a09603d12d414
 
 
+## Help for setting up the database
 
+Working with models sometimes means deleting `migrations` files and also deleting the `db.sqlite3` file.
+There is an easy way to `populate` the database once your made the migrations, just follow these steps:
+
+1. Delete all migration files in the migrations folder
+2. Delete the db.sqlite3 file
+3. Run `python manage.py makemigrations` then run ``python manage.py migrate jobs && python manage.py loaddata mydata.json`.
+
+This will populate the database with some Links, Searches and Results.
+
+You will also need to create a new user: `python manage.py createsuperuser`. This will prompt some questions regarding the credentials of that super user.

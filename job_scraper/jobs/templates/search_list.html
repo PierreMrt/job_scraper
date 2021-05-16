@@ -1,11 +1,12 @@
-{% extends "base.html" %} {% block searches %}
+{% extends "base.html" %} {% block searches_class %}
 <div class="max-w-sm mx-auto mt-32">
     <h2 class="text-2xl text-green-700 text-center mb-8">Searches currently active:</h2>
     <div class="p-4 space-y-4 bg-green-300 bg-stripes bg-stripes-white rounded-md">
-        {% for k, v in context.items %}
+        {% for search in all_searches %}
         <a href=/results/{{v.search_key}} class="block rounded-md text-white font-extrabold text-center bg-green-500 p-6 hover:underline">
-                    {{ v.job }} in {{v.country}}:<br>
-                    {{v.count}} results</a> {% endfor %}
+            <p>{{ search.job }} in {{search.country}}:</p>
+            <!-- <p>{{ search.results.count }} results.</p> -->
+        </a> {% endfor %}
     </div>
 </div>
 {% endblock %}
