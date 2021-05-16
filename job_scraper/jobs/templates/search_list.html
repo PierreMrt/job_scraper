@@ -1,12 +1,8 @@
-{% extends "base.html" %} {% block searches_class %}
-<div class="max-w-sm mx-auto mt-32">
-    <h2 class="text-2xl text-green-700 text-center mb-8">Searches currently active:</h2>
-    <div class="p-4 space-y-4 bg-green-300 bg-stripes bg-stripes-white rounded-md">
-        {% for search in all_searches %}
-        <a href=/results/{{v.search_key}} class="block rounded-md text-white font-extrabold text-center bg-green-500 p-6 hover:underline">
-            <p>{{ search.job }} in {{search.country}}:</p>
-            <p>{{ search.results.count }} results.</p>
-        </a> {% endfor %}
-    </div>
-</div>
-{% endblock %}
+{% extends "base.html" %} {% block search %}
+<h2 class="text-2xl text-green-800 font-bold text-center">Active Searches:</h2>
+<div class="p-4 flex flex-row flex-wrap justify-center items-center rounded-md">
+    {% for search in all_searches %}
+    <a href=/results/{{search.search_key}} class="rounded-md mx-2 h-full text-lg text-center py-2 hover:text-green-600">
+        <p><span class="font-bold">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.</p>
+    </a> {% endfor %}
+</div> {% endblock %}

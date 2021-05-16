@@ -1,46 +1,10 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
+{% extends "base.html" %} {% block results %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Job Scrapper</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="">
-</head>
+<h2 class="text-2xl text-green-600 font-extrabold text-center mb-8">Results for <span class="text-green-800 capitalize">{{results.info.job}}</span> in <span class="text-green-800 capitalize">{{results.info.country}}</span></h2>
+<div class="p-2 space-y-2 bg-green-300 bg-stripes bg-stripes-white rounded-md">
+    {% for result in results.list %}
+    <a href={{result.link}} class="block rounded-md text-white text-center bg-green-500 p-6 hover:underline">
+                {{result.job_title}}: in {{result.location}} for {{result.company}}</a>{% endfor %}
+</div>
 
-<body class="box-content">
-    <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
-
-    <nav class="w-100 py-4 px-4 md:px-16 bg-green-700 text-white flex flex-row flex-nowrap justify-between self-center">
-
-        <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
-        <div>
-            <ul class="flex flew-row flex-wrap">
-                <li class="ml-4"><a href="/searches">Active searches</a></li>
-                <li class="ml-4"><a href="/">Home</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="max-w-screen-lg mx-auto mt-32">
-        <h2 class="text-2xl text-green-700 font-extrabold text-center mb-8">Results for {{results.info.job}} in {{results.info.country}}:</h2>
-        <div class="p-2 space-y-2 bg-green-300 bg-stripes bg-stripes-white rounded-md">
-            {% for result in results.list %}
-            <a href={{result.link}} class="block rounded-md text-white text-center bg-green-500 p-6 hover:underline">
-                    {{result.job_title}}: in {{result.location}} for {{result.company}}</a> {% endfor %}
-        </div>
-    </div>
-
-    <script src="" async defer></script>
-</body>
-
-</html>
+{% endblock %}

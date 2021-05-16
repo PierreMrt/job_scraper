@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from rest_framework.views import APIView
+from django.views.generic.edit import CreateView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 # importing user model
@@ -51,18 +52,32 @@ class SearchView(ListView):
     context_object_name = 'all_searches'
     template_name = 'search_list.html'
 
-def show_searches(request):
-    searches = Search().active_search()
-    search_dict = {}
-    for i, search  in enumerate(searches):
-        search_dict[i] = {
-            'search_key': search.search_key,
-            'job': search.job.replace('_', ' '),
-            'country': search.country,
-            'count': len(Result().return_results(search.search_key))}
-    print(search_dict)
+class SearchCreateView(CreateView):
+
+    model = Search
+    fields = ['job', 'country']
+    template_name = 'search_form.html'
+    success_url = '/'
     
-    return render(request, 'searches.html', {'context': search_dict})
+    def form_valid(self, form):
+        # process the data in form.cleaned_data
+        job = form.cleaned_data['job']
+        country = form.cleaned_data['country']
+        # here we need to pass the data to the model's methods
+        job = job.replace(" ", "_").lower()
+        country = country.replace(" ", "_").lower()
+
+        s = Search(user='pierre', job=job, country=country)
+        s.new_search()
+        s.update()
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.request.accepts('text/html'):
+            return response
+        else:
+            return JsonResponse(form.errors, status=400)
+
     
 def show_results(request, search_key):
     job = search_key.split('&&')[0].replace('_', ' ')

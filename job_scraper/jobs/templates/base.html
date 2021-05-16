@@ -20,31 +20,32 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <nav class="w-100 py-4 px-4 md:px-16 bg-green-700 text-white flex flex-row flex-nowrap justify-between self-center">
+    <nav class="w-100 px-4 py-6 md:pl-32 md:pr-8 bg-green-700 text-white flex flex-row flex-nowrap justify-between self-center">
 
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
-        <div>
-            <ul class="flex flew-row flex-wrap">
-                <li class="ml-4"><a href="/searches">Active searches</a></li>
-                <li class="ml-4"><a href="#">My Account</a></li>
-            </ul>
-        </div>
+        <ul class="flex flew-row flex-wrap">
+            <li class="ml-4"><a href="/add" class="rounded px-4 py-2 bg-green-100 align-middle text-black hover:bg-green-500">Add Job</a></li>
+            <li class="ml-4"><a href="#">My Account</a></li>
+        </ul>
     </nav>
 
-    <div id="main" class="mx-4 mt-8">
-        {% block content %}{% endblock %}
-    </div>
+    <div id="main" class="w-100 py-4 px-4 md:px-32">
 
-    <div id="update" class="mx-4 mt-8">
-        {% block update %}{% endblock %}
-    </div>
+        <div id="form" class="mt-12">
+            {% block form %}{% endblock %}
+        </div>
 
-    <div id="searches" class="mx-4 mt-8">
-        {% block searches %}{% endblock %}
-    </div>
+        <div id="update" class="mt-12">
+            {% block update %}{% endblock %}
+        </div>
 
-    <div id="searches-class" class="mx-4 mt-8">
-        {% block searches_class %}{% endblock %}
+        <div id="searches" class="mt-12 mx-auto">
+            {% block search %}{% endblock %}
+        </div>
+
+        <div id="results" class="mt-12 mx-auto">
+            {% block results %}{% endblock %}
+        </div>
     </div>
 
     <script src="" async defer></script>
