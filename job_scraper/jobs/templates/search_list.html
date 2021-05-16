@@ -5,7 +5,7 @@
         {% for search in all_searches %}
         <a href=/results/{{v.search_key}} class="block rounded-md text-white font-extrabold text-center bg-green-500 p-6 hover:underline">
             <p>{{ search.job }} in {{search.country}}:</p>
-            <!-- <p>{{ search.results.count }} results.</p> -->
+            <p>{{ search.results.count }} results.</p>
         </a> {% endfor %}
     </div>
 </div>

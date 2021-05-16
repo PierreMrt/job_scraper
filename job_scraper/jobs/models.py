@@ -51,10 +51,10 @@ class Search(models.Model):
         if self.search_key not in actives:
             self.save()
             print(f'{self.search_key} added to searches')
-            Search().scrap(self.job, self.country)
+            Result().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
-            Search().scrap(self.job, self.country)
+            Result().scrap(self.job, self.country)
         
     def active_search(self):
         actives = set()
@@ -64,12 +64,31 @@ class Search(models.Model):
     def update(self):
         for active in self.active_search():
             job, country = self.split_search_key(active.search_key)
-            Search().scrap(job, country)
+            Result().scrap(job, country)
+
+
+class Result(models.Model):
+    search_key = models.CharField(max_length=255)
+    search = models.ForeignKey(Search, related_name='results', on_delete=models.PROTECT)
+    source = models.CharField(max_length=255, null=True, blank=True)
+    job_id = models.CharField(max_length=255, null=True, blank=True)
+    job_title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    company = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateTimeField(null=True, blank=True)
+    link = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.search_key
 
     def add_result(self, r):
-        search = Search.objects.all()
-        print(search)
-        new_entry = search.result_set.create(search_key=r['search_key'], source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
+        search_key = r['search_key']
+        job, country = Search().split_search_key(search_key)
+        search = Search.objects.filter(job=job, country=country).get()
+        
+        new_entry = Result.objects.create(search_key=r['search_key'], search=search, source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
                             description=r['description'], company=r['company'], location=r['location'],
                             country=r['country'], date=r['date'], link=r['link'])
         new_entry.save()
@@ -79,6 +98,7 @@ class Search(models.Model):
         cache = self.cached_ids()
 
         linkedin = LinkedIn(cache, job, country)
+        print('adding results...')
         for r in linkedin.results:
             self.add_result(r)
 
@@ -98,23 +118,6 @@ class Search(models.Model):
 
     def return_results(self, search_key):
         return Result.objects.filter(search_key=search_key)
-
-
-class Result(models.Model):
-    search_key = models.CharField(max_length=255)
-    search = models.ForeignKey(Search, on_delete=models.CASCADE)
-    source = models.CharField(max_length=255, null=True, blank=True)
-    job_id = models.CharField(max_length=255, null=True, blank=True)
-    job_title = models.CharField(max_length=255, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    company = models.CharField(max_length=255, null=True, blank=True)
-    location = models.CharField(max_length=255, null=True, blank=True)
-    country = models.CharField(max_length=255, null=True, blank=True)
-    date = models.DateTimeField(null=True, blank=True)
-    link = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.search_key
 
 # def main():
 #     # s = Search(user='pierre', job='data_analyst', country='italy')
