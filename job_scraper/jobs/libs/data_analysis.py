@@ -20,10 +20,11 @@ class TextCleaner:
 
     def get_settings(self):
         return {
-            'remove_punctuation': {'activated': True,  'action': self.remove_punctuation},
-            'lower_case':         {'activated': True,  'action': self.lowerize},
-            'remove_stopword':    {'activated': True,  'action': self.remove_stopwords},
-            'stemming':           {'activated': False, 'action': self.stemming}
+            'remove_punctuation': {'activated': True, 'action': self.remove_punctuation},
+            'lower_case':         {'activated': True, 'action': self.lowerize},
+            'remove_stopword':    {'activated': True, 'action': self.remove_stopwords},
+            'stemming':           {'activated': False, 'action': self.stemming},
+            'too_long':           {'activated': True, 'action': self.too_long}
         }
 
     def clean_text(self):
@@ -33,6 +34,8 @@ class TextCleaner:
 
             if params['activated']:
                 tokens = params['action'](tokens)
+            
+        tokens.remove('')
         return tokens
 
     @staticmethod
@@ -42,7 +45,7 @@ class TextCleaner:
     @staticmethod
     def remove_punctuation(tokens):
         future_tokens = []
-        whitelist = string.ascii_letters + ' ' + "'" + 'éèàçùëê'
+        whitelist = string.ascii_letters + ' ' + "-" + 'éèàçùëê'
         for text in tokens:      
             try:
                 future_tokens.append(''.join(character for character in text if character in whitelist))
@@ -63,6 +66,10 @@ class TextCleaner:
         return [porter.stem(word) for word in tokens]
 
     @staticmethod
+    def too_long(tokens):
+        return [w for w in tokens if len(w) < 13]
+
+    @staticmethod
     def create_stopwords():
         white_list = []
         lang_settings = {
@@ -78,11 +85,9 @@ class TextCleaner:
         stop_words = [w for w in stop_words if w not in white_list]
         return stop_words
 
-# https://stackoverflow.com/questions/2161752/how-to-count-the-frequency-of-the-elements-in-an-unordered-list
-
 def frequency(tokens):
     counter = collections.Counter(tokens)
-    return counter.most_common(50)
+    return counter.most_common(100)
 
 
 if __name__ == '__main__':
