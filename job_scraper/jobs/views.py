@@ -16,6 +16,8 @@ from django.views.generic import ListView
 from .forms import JobForm
 from django.shortcuts import render
 
+from jobs.libs.data_analysis import TextCleaner
+
 def get_job(request):
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
@@ -89,3 +91,10 @@ def show_results(request, search_key):
         'country': country}
     results['list'] = Result().return_results(search_key)
     return render(request, 'results.html', {'results': results})
+
+def show_keywords(search_key):
+    results = Result().return_results(search_key)
+    text_list = list([r.description for r in results])
+    full_text = ' '.join(text_list)
+    tokens = TextCleaner(full_text).clean_text()
+    print(tokens)
