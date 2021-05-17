@@ -6,6 +6,8 @@ import string
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
+import collections
+
 
 
 
@@ -77,6 +79,11 @@ class TextCleaner:
         return stop_words
 
 # https://stackoverflow.com/questions/2161752/how-to-count-the-frequency-of-the-elements-in-an-unordered-list
+
+def frequency(tokens):
+    counter = collections.Counter(tokens)
+    return counter.most_common(50)
+
 
 if __name__ == '__main__':
     TextCleaner('lol').create_stopwords()

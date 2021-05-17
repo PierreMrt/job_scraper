@@ -16,7 +16,7 @@ from django.views.generic import ListView
 from .forms import JobForm
 from django.shortcuts import render
 
-from jobs.libs.data_analysis import TextCleaner
+from jobs.libs.data_analysis import TextCleaner, frequency
 
 def get_job(request):
     if request.method == 'POST':
@@ -97,4 +97,6 @@ def show_keywords(search_key):
     text_list = list([r.description for r in results])
     full_text = ' '.join(text_list)
     tokens = TextCleaner(full_text).clean_text()
-    print(tokens)
+    freq = frequency(tokens)
+    print(freq)
+    
