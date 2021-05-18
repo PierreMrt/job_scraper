@@ -9,22 +9,24 @@ from nltk.stem.porter import PorterStemmer
 import collections
 
 
-
-
-
 class TextCleaner:
     def __init__(self, to_clean):
         self.stopwords = self.create_stopwords()
         self.to_clean = to_clean
         self.settings = self.get_settings()
+        self.lang_settings = {
+            'english': {'active': True, 'words': set(stopwords.words('english'))},
+            'french' : {'active': True, 'words': set(stopwords.words('french'))},
+            'italian': {'active': True, 'words': set(stopwords.words('italian'))},
+            'spanish': {'active': True, 'words': set(stopwords.words('spanish'))}}
 
     def get_settings(self):
         return {
-            'remove_punctuation': {'activated': True, 'action': self.remove_punctuation},
-            'lower_case':         {'activated': True, 'action': self.lowerize},
-            'remove_stopword':    {'activated': True, 'action': self.remove_stopwords},
-            'stemming':           {'activated': False, 'action': self.stemming},
-            'too_long':           {'activated': True, 'action': self.too_long}
+            'remove_punctuation': {'active': True, 'action': self.remove_punctuation},
+            'lower_case':         {'active': True, 'action': self.lowerize},
+            'remove_stopword':    {'active': True, 'action': self.remove_stopwords},
+            'stemming':           {'active': False, 'action': self.stemming},
+            'too_long':           {'active': True, 'action': self.too_long}
         }
 
     def clean_text(self):
@@ -32,7 +34,7 @@ class TextCleaner:
 
         for k, params in self.settings.items():
 
-            if params['activated']:
+            if params['active']:
                 tokens = params['action'](tokens)
             
         return tokens
@@ -72,14 +74,9 @@ class TextCleaner:
     def create_stopwords():
         white_list = []
         black_list = ['moreshow', 'plus']
-        lang_settings = {
-            'english': {'active': True, 'words': set(stopwords.words('english'))},
-            'french': {'active': True, 'words': set(stopwords.words('french'))},
-            'italian': {'active': True, 'words': set(stopwords.words('italian'))},
-            'spanish': {'active': True, 'words': set(stopwords.words('spanish'))}
-        }
+
         stop_words = set(black_list)
-        for v in lang_settings.values():
+        for v in self.lang_settings.values():
             if v['active']:
                 stop_words = set.union(stop_words, v['words'])
         stop_words = [w for w in stop_words if w not in white_list]
