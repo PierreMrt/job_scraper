@@ -36,11 +36,18 @@ First, check that you are under the project's pip environment (in the terminal, 
 
 ## :white_check_mark: Task list
 
-- [ ] create api
 - [ ] manage captcha for indeed and fix scrap
-- [ ] frontend
+- [ ] remove quotes and doubles quote in job description
+- [ ] get job offer publication's date
+- [ ] find a place for update button
+- [ ] offer language detection
+- [ ] dinamic filtering for views - advanced search
+- [ ] rename and clean repo
+- [ ] create account creation
+- [ ] create link with user
 - [ ] update results everyday (cf celery)
-- [ ] host serverS
+- [ ] host servers
+- [ ] javascript with svelt ?
 
 ### docs:
 models: https://docs.djangoproject.com/en/3.2/topics/db/models/
