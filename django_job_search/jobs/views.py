@@ -15,9 +15,30 @@ from rest_framework.decorators import api_view
 # Forms
 from .forms import JobForm
 # Libs
-from jobs.libs.data_analysis import TextCleaner, frequency
-## Serializers (in case we Activate the REST API)
-#from .serializers import ProductSerializer, CategorySerializer
+from jobs.libs.data_analysis import TextCleaner, token_freq, lang_freq
+
+def get_job(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = JobForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data
+            job = form.cleaned_data['job']
+            country = form.cleaned_data['country']
+            # here we need to pass the data to the model's methods
+            job = job.replace(" ", "_").lower()
+            country = country.replace(" ", "_").lower()
+
+            s = Search(user='pierre', job=job, country=country)
+            s.new_search()
+            s.update()
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = JobForm()
+
+    return render(request, 'forms.html', {'form': form})
 
 def update_search(request):
     print('updating active searches')
@@ -64,13 +85,15 @@ def show_results(request, search_key):
     country = search_key.split('&&')[1]
 
     keywords = get_keywords(search_key)
+    langs = dict(get_lang_freq(search_key))
 
     results = {}
     results['info'] = {
         'search_key': search_key,
-        'job': job,
-        'country': country,
-        'keywords': keywords}
+        'job'       : job,
+        'country'   : country,
+        'keywords'  : keywords,
+        'langs'     : langs}
     results['list'] = Result().return_results(search_key)
     return render(request, 'jobs/results.html', {'results': results})
 
@@ -79,4 +102,10 @@ def get_keywords(search_key):
     text_list = list([r.description for r in results])
     full_text = ' '.join(text_list)
     tokens = TextCleaner(full_text).clean_text()
-    return frequency(tokens)
+    return token_freq(tokens)
+
+def get_lang_freq(search_key):
+    results = Result().return_results(search_key)
+    text_list = list([r.description for r in results])
+    return lang_freq(text_list)
+    

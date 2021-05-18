@@ -20,9 +20,20 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
-
-
+    </table>    
+</div>
+<div class='container float-right rounded border-4 border-double border-green-600 w-1/4 mt-8'>
+    <h3 class="text-xl text-green-600 font-bold text-center my-4">Languages frequency</h3>
+    <table class='table-auto my-4 mx-auto capitalize font-bold w-1/2'>
+        <tbody>
+            {% for k, v in results.info.langs.items %}
+            <tr>
+                <td>{{ k }}:</td>
+                <td>{{ v }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
 </div>
 
 {% endblock %}

@@ -82,10 +82,33 @@ class TextCleaner:
         stop_words = [w for w in stop_words if w not in white_list]
         return stop_words
 
-def frequency(tokens):
+def token_freq(tokens):
     counter = collections.Counter(tokens)
     return counter.most_common(11)[1:]
 
+def detect_lang(text):
+    lang = {
+        'english': {'count': 0, 'words': set(stopwords.words('english'))},
+        'french' : {'count': 0, 'words': set(stopwords.words('french'))},
+        'italian': {'count': 0, 'words': set(stopwords.words('italian'))},
+        'spanish': {'count': 0, 'words': set(stopwords.words('spanish'))}}
+
+    for k, v in lang.items():
+        for w in v['words']:
+            if w in text:
+                v['count'] += 1
+        # print(k, v['count'])
+    detected_lang = sorted(lang, key=lambda x: lang[x]['count'], reverse=True)[0]
+    return detected_lang
+
+def lang_freq(text_list):
+    lang_used = []
+    for text in text_list:
+        lang_used.append(detect_lang(text))
+    return collections.Counter(lang_used)
+
+
 
 if __name__ == '__main__':
-    TextCleaner('lol').create_stopwords()
+    text_list = ["you gotta be proud of this result", 'hello darkness my old friend', 'boujour, tu veux du paté', 'perfetto facciamo cosi']
+    print(lang_freq(text_list))
