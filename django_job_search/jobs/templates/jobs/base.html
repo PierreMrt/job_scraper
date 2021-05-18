@@ -25,11 +25,22 @@
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
         <ul class="flex flew-row flex-wrap">
             <li class="ml-4"><a href="/add" class="rounded px-4 py-2 bg-green-100 align-middle text-black hover:bg-green-500">Add Job</a></li>
+            {% if user.is_authenticated %}
             <li class="ml-4"><a href="#">My Account</a></li>
+            <li class="ml-4"><a href="/logout">Log out</a></li>
+            {% else %}
+            <li class="ml-4"><a href="/login">Log in</a></li>
+            <li class="ml-4"><a href="/register">Register</a></li>
+            {% endif %}
+
         </ul>
     </nav>
 
     <div id="main" class="w-100 py-4 px-4 md:px-32">
+
+        <div id="form" class="mt-12">
+            {% block content %}{% endblock %}
+        </div>
 
         <div id="form" class="mt-12">
             {% block form %}{% endblock %}
@@ -45,6 +56,9 @@
 
         <div id="results" class="mt-12 mx-auto">
             {% block results %}{% endblock %}
+        </div>
+        <div id="register" class="mt-12 mx-auto">
+            {% block register %}{% endblock %}
         </div>
     </div>
 

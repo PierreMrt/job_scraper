@@ -51,17 +51,18 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    "crispy_forms",
+    "crispy_tailwind",
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
     'rest_framework',
-    "crispy_forms",
-    "crispy_tailwind",
     'djoser',
     
-    'jobs'
+    'jobs',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+LOGIN_REDIRECT_URL = 'home'
