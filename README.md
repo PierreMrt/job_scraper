@@ -3,6 +3,8 @@ job scraper is a web app that allow you to set up job searches via the scraping 
 
 ## :bulb: What is the idea behind this project?
 
+All jobs offers in the same place. Advanced filters to find the perfect job.
+
 
 
 ## :open_book: How can I contribute ?
