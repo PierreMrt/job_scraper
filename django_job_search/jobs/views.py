@@ -16,7 +16,7 @@ from django.views.generic import ListView
 from .forms import JobForm
 from django.shortcuts import render
 
-from jobs.libs.data_analysis import TextCleaner, frequency
+from jobs.libs.data_analysis import TextCleaner, token_freq, lang_freq
 
 def get_job(request):
     if request.method == 'POST':
@@ -86,13 +86,15 @@ def show_results(request, search_key):
     country = search_key.split('&&')[1]
 
     keywords = get_keywords(search_key)
+    langs = dict(get_lang_freq(search_key))
 
     results = {}
     results['info'] = {
         'search_key': search_key,
-        'job': job,
-        'country': country,
-        'keywords': keywords}
+        'job'       : job,
+        'country'   : country,
+        'keywords'  : keywords,
+        'langs'     : langs}
     results['list'] = Result().return_results(search_key)
     return render(request, 'results.html', {'results': results})
 
@@ -101,5 +103,10 @@ def get_keywords(search_key):
     text_list = list([r.description for r in results])
     full_text = ' '.join(text_list)
     tokens = TextCleaner(full_text).clean_text()
-    return frequency(tokens)
+    return token_freq(tokens)
+
+def get_lang_freq(search_key):
+    results = Result().return_results(search_key)
+    text_list = list([r.description for r in results])
+    return lang_freq(text_list)
     
