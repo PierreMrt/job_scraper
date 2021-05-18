@@ -26,7 +26,7 @@
         <ul class="flex flew-row flex-wrap">
             <li class="ml-4"><a href="/add" class="rounded px-4 py-2 bg-green-100 align-middle text-black hover:bg-green-500">Add Job</a></li>
             {% if user.is_authenticated %}
-            <li class="ml-4"><a href="#">My Account</a></li>
+            <li class="ml-4"><a href="/profile">My Account</a></li>
             <li class="ml-4"><a href="/logout">Log out</a></li>
             {% else %}
             <li class="ml-4"><a href="/login">Log in</a></li>
