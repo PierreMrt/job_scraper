@@ -3,6 +3,6 @@
 <div class="p-4 flex flex-row flex-wrap justify-center items-center rounded-md">
     {% for search in all_searches %}
     <a href=/results/{{search.search_key}} class="rounded-md mx-2 h-full text-lg text-center py-2 hover:text-green-600">
-        <p><span class="font-bold">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.</p>
+        <p><span class="font-bold capitalize">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.</p>
     </a> {% endfor %}
 </div> {% endblock %}

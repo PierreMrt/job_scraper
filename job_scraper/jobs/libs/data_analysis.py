@@ -11,7 +11,6 @@ import collections
 
 class TextCleaner:
     def __init__(self, to_clean):
-        self.stopwords = self.create_stopwords()
         self.to_clean = to_clean
         self.settings = self.get_settings()
         self.lang_settings = {
@@ -19,6 +18,7 @@ class TextCleaner:
             'french' : {'active': True, 'words': set(stopwords.words('french'))},
             'italian': {'active': True, 'words': set(stopwords.words('italian'))},
             'spanish': {'active': True, 'words': set(stopwords.words('spanish'))}}
+        self.stopwords = self.create_stopwords()
 
     def get_settings(self):
         return {
@@ -70,8 +70,7 @@ class TextCleaner:
     def too_long(tokens):
         return [w for w in tokens if len(w) < 13]
 
-    @staticmethod
-    def create_stopwords():
+    def create_stopwords(self):
         white_list = []
         black_list = ['moreshow', 'plus']
 
