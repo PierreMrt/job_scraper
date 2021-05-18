@@ -1,10 +1,28 @@
 {% extends "base.html" %} {% block results %}
 
-<h2 class="text-2xl text-green-600 font-extrabold text-center mb-8">Results for <span class="text-green-800 capitalize">{{results.info.job}}</span> in <span class="text-green-800 capitalize">{{results.info.country}}</span></h2>
-<div class="p-2 space-y-2 bg-green-300 bg-stripes bg-stripes-white rounded-md">
-    {% for result in results.list %}
-    <a href={{result.link}} class="block rounded-md text-white text-center bg-green-500 p-6 hover:underline">
-                {{result.job_title}}: in {{result.location}} for {{result.company}}</a>{% endfor %}
+<div class='float-left w-2/3'>
+    <h2 class="text-2xl text-green-600 font-extrabold text-center">Results for <span class="text-green-800 capitalize">{{results.info.job}}</span> in <span class="text-green-800 capitalize">{{results.info.country}}</span></h2>
+    <h3 class="text-xl text-green-800 font-extrabold text-center mb-8">({{ results.list|length }} results)</h3>
+    <div class="p-2 space-y-2 bg-green-300 bg-stripes bg-stripes-white rounded-md">
+        {% for result in results.list %}
+        <a href={{result.link}} class="block rounded-md text-white text-center bg-green-500 p-6 hover:bg-green-700">
+                    {{result.job_title}}: in {{result.location}} for {{result.company}}</a>{% endfor %}
+    </div>
+</div>
+<div class='container float-right rounded border-4 border-double border-green-600 w-1/4 mt-24'>
+    <h3 class="text-xl text-green-600 font-bold text-center my-4">Top 10 keywords</h3>
+    <table class='table-auto my-4 mx-auto capitalize font-bold w-1/2'>
+        <tbody>
+            {% for kw in results.info.keywords %}
+            <tr>
+                <td>{{ kw.0 }}:</td>
+                <td>{{ kw.1 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>    
+   
+
 </div>
 
 {% endblock %}

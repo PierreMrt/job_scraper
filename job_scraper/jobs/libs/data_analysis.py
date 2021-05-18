@@ -35,7 +35,6 @@ class TextCleaner:
             if params['activated']:
                 tokens = params['action'](tokens)
             
-        tokens.remove('')
         return tokens
 
     @staticmethod
@@ -45,7 +44,7 @@ class TextCleaner:
     @staticmethod
     def remove_punctuation(tokens):
         future_tokens = []
-        whitelist = string.ascii_letters + ' ' + "-" + 'éèàçùëê'
+        whitelist = string.ascii_letters + ' ' + "'" + 'éèàçùëê'
         for text in tokens:      
             try:
                 future_tokens.append(''.join(character for character in text if character in whitelist))
@@ -72,13 +71,14 @@ class TextCleaner:
     @staticmethod
     def create_stopwords():
         white_list = []
+        black_list = ['moreshow', 'plus']
         lang_settings = {
             'english': {'active': True, 'words': set(stopwords.words('english'))},
             'french': {'active': True, 'words': set(stopwords.words('french'))},
             'italian': {'active': True, 'words': set(stopwords.words('italian'))},
             'spanish': {'active': True, 'words': set(stopwords.words('spanish'))}
         }
-        stop_words = set()
+        stop_words = set(black_list)
         for v in lang_settings.values():
             if v['active']:
                 stop_words = set.union(stop_words, v['words'])
@@ -87,7 +87,7 @@ class TextCleaner:
 
 def frequency(tokens):
     counter = collections.Counter(tokens)
-    return counter.most_common(100)
+    return counter.most_common(11)[1:]
 
 
 if __name__ == '__main__':

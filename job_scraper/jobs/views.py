@@ -84,19 +84,22 @@ class SearchCreateView(CreateView):
 def show_results(request, search_key):
     job = search_key.split('&&')[0].replace('_', ' ')
     country = search_key.split('&&')[1]
+
+    keywords = get_keywords(search_key)
+
     results = {}
     results['info'] = {
         'search_key': search_key,
         'job': job,
-        'country': country}
+        'country': country,
+        'keywords': keywords}
     results['list'] = Result().return_results(search_key)
     return render(request, 'results.html', {'results': results})
 
-def show_keywords(search_key):
+def get_keywords(search_key):
     results = Result().return_results(search_key)
     text_list = list([r.description for r in results])
     full_text = ' '.join(text_list)
     tokens = TextCleaner(full_text).clean_text()
-    freq = frequency(tokens)
-    print(freq)
+    return frequency(tokens)
     
