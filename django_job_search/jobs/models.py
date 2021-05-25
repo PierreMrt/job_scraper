@@ -119,7 +119,5 @@ class Result(models.Model):
     def return_results(self, search_key):
         return Result.objects.filter(search_key=search_key)
 
-# def main():
-#     # s = Search(user='pierre', job='data_analyst', country='italy')
-#     # s.new_search()
-#     # Search().update()
+    # def return_included_results(self, search_key):
+        # return Result.objects.filter(search_key=search_key)

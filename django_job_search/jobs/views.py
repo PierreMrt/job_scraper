@@ -79,23 +79,61 @@ class SearchCreateView(CreateView):
         else:
             return JsonResponse(form.errors, status=400)
 
-    
-def show_results(request, search_key):
-    job = search_key.split('&&')[0].replace('_', ' ')
-    country = search_key.split('&&')[1]
 
-    keywords = get_keywords(search_key)
-    langs = dict(get_lang_freq(search_key))
+class ResultView(ListView):
 
-    results = {}
-    results['info'] = {
-        'search_key': search_key,
-        'job'       : job,
-        'country'   : country,
-        'keywords'  : keywords,
-        'langs'     : langs}
-    results['list'] = Result().return_results(search_key)
-    return render(request, 'jobs/results.html', {'results': results})
+    model = Result
+    context_object_name = 'all_results'
+    template_name = 'jobs/result_list.html'
+
+    def get_context_data(self, **kwargs):
+
+        search_key = self.request.path.split('/')[2]
+
+        job = search_key.split('&&')[0].replace('_', ' ')
+        country = search_key.split('&&')[1]
+
+        keywords = get_keywords(search_key)
+        langs = dict(get_lang_freq(search_key))
+
+        results = {}
+        results['info'] = {
+            'search_key': search_key,
+            'job'       : job,
+            'country'   : country,
+            'keywords'  : keywords,
+            'langs'     : langs}
+        results['list'] = Result().return_results(search_key)
+        
+        # print(results)
+
+        return results
+
+
+# def show_results(request, search_key, *args):
+#     job = search_key.split('&&')[0].replace('_', ' ')
+#     country = search_key.split('&&')[1]
+
+#     # if kwargs argument include
+#     # function include in models
+
+#     # elif exclude
+#     # in returned results remove ones within
+
+#     # elif return all results
+
+#     keywords = get_keywords(search_key)
+#     langs = dict(get_lang_freq(search_key))
+
+#     results = {}
+#     results['info'] = {
+#         'search_key': search_key,
+#         'job'       : job,
+#         'country'   : country,
+#         'keywords'  : keywords,
+#         'langs'     : langs}
+#     results['list'] = Result().return_results(search_key)
+#     return render(request, 'jobs/results.html', {'results': results})
 
 def get_keywords(search_key):
     results = Result().return_results(search_key)
