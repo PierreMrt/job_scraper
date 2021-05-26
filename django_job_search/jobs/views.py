@@ -86,7 +86,11 @@ class ResultView(ListView):
     context_object_name = 'all_results'
     template_name = 'jobs/result_list.html'
 
-    def get_context_data(self, **kwargs):
+    def get_queryset(self):
+        search_key = self.request.path.split('/')[2]
+        return Result().return_results(search_key)
+
+    def get_context_data(self, *args, **kwargs):
 
         search_key = self.request.path.split('/')[2]
 
@@ -96,19 +100,15 @@ class ResultView(ListView):
         keywords = get_keywords(search_key)
         langs = dict(get_lang_freq(search_key))
 
-        results = {}
-        results['info'] = {
+        info = {
             'search_key': search_key,
             'job'       : job,
             'country'   : country,
             'keywords'  : keywords,
             'langs'     : langs}
-        results['list'] = Result().return_results(search_key)
-        print(results['list'])
-        
-        # print(results)
-
-        return results
+        context = super(ResultView, self).get_context_data(*args, **kwargs)
+        context['info'] = info
+        return context
 
 
 # def show_results(request, search_key, *args):
