@@ -104,6 +104,7 @@ class ResultView(ListView):
             'keywords'  : keywords,
             'langs'     : langs}
         results['list'] = Result().return_results(search_key)
+        print(results['list'])
         
         # print(results)
 

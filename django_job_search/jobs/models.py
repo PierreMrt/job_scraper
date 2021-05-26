@@ -118,6 +118,25 @@ class Result(models.Model):
 
     def return_results(self, search_key):
         return Result.objects.filter(search_key=search_key)
+    
+    def filtered_results(self, search_key, **kwargs):
+        results = Result.objects.filter(search_key=search_key)
+        if 'include' in kwargs:
+            to_include = kwargs['include'].split(', ')
+            for kw in to_include:
+                results = results.filter(description__contains=kw)
+        elif 'exclude' in kwargs:
+            to_exclude = kwargs['exclude'].split(', ')
+            for kw in to_exclude:
+                results = results.filter(description__contains=kw)
+        
+        return results
+            
+
+
 
     # def return_included_results(self, search_key):
         # return Result.objects.filter(search_key=search_key)
+
+def main():
+    Result().filtered_results('data_analyst&&france', include='python, SQL')
