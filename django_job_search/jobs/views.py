@@ -94,59 +94,34 @@ class ResultView(ListView):
         return Result().filtered_results(search_key, include, exclude)
 
     def get_context_data(self, *args, **kwargs):
-        search_key = self.request.path.split('/')[2]
+        context = super(ResultView, self).get_context_data(*args, **kwargs)
 
+        search_key = self.request.path.split('/')[2]
         job = search_key.split('&&')[0].replace('_', ' ')
         country = search_key.split('&&')[1]
 
-        keywords = get_keywords(search_key)
-        langs = dict(get_lang_freq(search_key))
+        keywords = get_keywords(context)
+        langs = dict(get_lang_freq(context))
 
         info = {
             'search_key': search_key,
             'job'       : job,
             'country'   : country,
             'keywords'  : keywords,
-            'langs'     : langs}
-        context = super(ResultView, self).get_context_data(*args, **kwargs)
+            'langs'     : langs,
+            'include'   : self.request.GET.get('include'),
+            'exclude'   : self.request.GET.get('exclude')}
         context['info'] = info
         return context
 
 
-# def show_results(request, search_key, *args):
-#     job = search_key.split('&&')[0].replace('_', ' ')
-#     country = search_key.split('&&')[1]
-
-#     # if kwargs argument include
-#     # function include in models
-
-#     # elif exclude
-#     # in returned results remove ones within
-
-#     # elif return all results
-
-#     keywords = get_keywords(search_key)
-#     langs = dict(get_lang_freq(search_key))
-
-#     results = {}
-#     results['info'] = {
-#         'search_key': search_key,
-#         'job'       : job,
-#         'country'   : country,
-#         'keywords'  : keywords,
-#         'langs'     : langs}
-#     results['list'] = Result().return_results(search_key)
-#     return render(request, 'jobs/results.html', {'results': results})
-
-def get_keywords(search_key):
-    results = Result().return_results(search_key)
-    text_list = list([r.description for r in results])
+def get_keywords(results):
+    text_list = list([r.description for r in results['object_list']])
     full_text = ' '.join(text_list)
     tokens = TextCleaner(full_text).clean_text()
     return token_freq(tokens)
 
-def get_lang_freq(search_key):
-    results = Result().return_results(search_key)
-    text_list = list([r.description for r in results])
+def get_lang_freq(results):
+    text_list = list([r.description for r in results['object_list']])
     return lang_freq(text_list)
     

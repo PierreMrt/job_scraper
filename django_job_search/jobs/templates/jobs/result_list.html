@@ -4,13 +4,20 @@
         <h2 class="text-2xl text-green-600 font-extrabold text-center">Results for <span class="text-green-800 capitalize">{{info.job}}</span> in <span class="text-green-800 capitalize">{{info.country}}</span></h2>
         <h3 class="text-xl text-green-800 font-extrabold text-center mb-8">({{ all_results |length }} results)</h3>
         <div>
-            <form class="my-12 flex flex-row space-x-4" action="" method="get">
+            <form class="my-2 flex flex-row space-x-4" action="" method="get">
                 <!-- {% csrf_token %} -->
                 <div class='mb-2'><p class='font-bold text-gray-700'>Include</p><input name='include' type="text" placeholder="Include ..." class='rounded border border-gray-300 p-1'></div>
                 <div class='mb-2'><p class='font-bold text-gray-700'>Exclude</p><input name='exclude' type="text" placeholder="Exclude ..." class='rounded border border-gray-300 p-1'></div>
                 <button type="submit" class="bg-green-500 rounded px-4 mt-4 mb-2 text-lg text-white cursor-pointer hover:bg-green-700" value="submit">Filter</button>
             </form>
         </div>
+        {% if info.include %}
+        <p class='italic text-gray-700'>including: {{ info.include }}</p>
+        {% endif %}
+        {% if info.exclude %}
+        <p class='italic text-gray-700'>excluding: {{ info.exclude }}</p>
+        {% endif %}
+
         <div class="p-2 space-y-2 bg-green-300 rounded-md">
             {% for result in all_results %}
             <a href={{result.link}} class="block rounded-md text-white text-center bg-green-500 p-6 hover:bg-green-700">
