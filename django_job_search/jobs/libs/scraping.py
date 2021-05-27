@@ -122,18 +122,6 @@ class Indeed(Scraper):
                         'text' : {'tag': 'div', 'class': 'jobsearch-jobDescriptionText'}
                         }
 
-                    # title = content.find('div', class_='jobsearch-JobInfoHeader-title-container').text
-                    # info = content.find('div', class_='jobsearch-JobInfoHeader-subtitle').find_all('div')
-
-                    # company = info[0].text
-                    # company = re.split(r'(\d+)', company)[0]
-                    # if len(info) > 4:
-                    #     location = info[8].text
-                    # else:
-                    #     location = info[2].text
-                    # location = re.split(r'(\d+)', location)[-1]
-
-                    # text = content.find('div', class_='jobsearch-jobDescriptionText').text
                     job_details = self._fetch_details(content, job_details)
                     row = self._create_entry(job_details, 'Indeed', job_id, link)
                     count += 1
@@ -141,11 +129,11 @@ class Indeed(Scraper):
 
         print(f'added {count} offers from Indeed')
 
-        def _fetch_details(self, content, job_details):
-            job_details = super()._fetch_details(content, job_details)
-            print(job_details)
-            print(job_details['info'])
-            return job_details
+    def _fetch_details(self, content, job_details):
+        job_details = super()._fetch_details(content, job_details)
+        print(job_details)
+        print(job_details['info'])
+        return job_details
 
 
 
@@ -161,8 +149,9 @@ class Monster(Scraper):
             'class': "view-details-link", 
             'attr' : 'href'}
 
-        self.job_ids = self._get_ids()
-        self.results = self._scrap_results()
+        if links[1] != 'None': # If a country doesn't have monster
+            self.job_ids = self._get_ids()
+            self.results = self._scrap_results()
 
     def _scrap_results(self):
         count = 0

@@ -98,7 +98,7 @@ class Result(models.Model):
         cache = self.cached_ids()
 
         linkedin = LinkedIn(cache, job, country)
-        print('adding results...')
+        print(f"Scraping {job} in {country}.")
         for r in linkedin.results:
             self.add_result(r)
 
@@ -107,8 +107,11 @@ class Result(models.Model):
         #     self.add_result(r)
 
         monster = Monster(links, cache, job, country)
-        for r in monster.results:
-            self.add_result(r)
+        try:
+            for r in monster.results:
+                self.add_result(r)
+        except AttributeError:
+            print(f"Skipping monster as {country} doesn't have it.")
 
     def cached_ids(self):
         cached_ids = set()
