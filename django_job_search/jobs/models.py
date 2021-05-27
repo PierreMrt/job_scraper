@@ -119,17 +119,17 @@ class Result(models.Model):
     def return_results(self, search_key):
         return Result.objects.filter(search_key=search_key)
     
-    def filtered_results(self, search_key, **kwargs):
+    def filtered_results(self, search_key, include, exclude):
         results = Result.objects.filter(search_key=search_key)
-        if 'include' in kwargs:
-            to_include = kwargs['include'].split(', ')
+        if include is not None and include != '':
+            to_include = include.split(', ')
             for kw in to_include:
-                results = results.filter(description__contains=kw)
-        elif 'exclude' in kwargs:
-            to_exclude = kwargs['exclude'].split(', ')
+                    results = results.filter(description__contains=kw)
+        if exclude is not None and exclude != '':
+            print('EXCLUDE: ', exclude )
+            to_exclude = exclude.split(', ')
             for kw in to_exclude:
-                results = results.filter(description__contains=kw)
-        
+                results = results.exclude(description__contains=kw)   
         return results
             
 

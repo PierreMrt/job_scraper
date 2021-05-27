@@ -86,14 +86,14 @@ class ResultView(ListView):
     context_object_name = 'all_results'
     template_name = 'jobs/result_list.html'
 
-    def get_queryset(self):     
+    def get_queryset(self):    
+        include = self.request.GET.get('include')
+        exclude = self.request.GET.get('exclude')
+
         search_key = self.request.path.split('/')[2]
-        return Result().return_results(search_key)
+        return Result().filtered_results(search_key, include, exclude)
 
     def get_context_data(self, *args, **kwargs):
-        query = self.request.GET.get('include')
-        print('QUERY', query)
-
         search_key = self.request.path.split('/')[2]
 
         job = search_key.split('&&')[0].replace('_', ' ')
