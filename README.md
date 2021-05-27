@@ -41,11 +41,11 @@ First, check that you are under the project's pip environment (in the terminal, 
 - [ ] manage captcha for indeed and fix scrap
 - [ ] remove quotes and doubles quote in job description
 - [ ] get job offer publication's date
-- [ ] find a place for update button
-- [ ] offer language detection
-- [ ] dinamic filtering for views - advanced search
+- [x] find a place for update button
+- [x] offer language detection
+- [x] dinamic filtering for views - advanced search
 - [ ] rename and clean repo
-- [ ] create account creation
+- [x] create account creation
 - [ ] create link with user
 - [ ] update results everyday (cf celery)
 - [ ] host servers
