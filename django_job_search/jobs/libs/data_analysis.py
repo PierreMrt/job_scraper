@@ -73,7 +73,7 @@ class TextCleaner:
 
     def create_stopwords(self):
         white_list = []
-        black_list = ['moreshow', 'plus']
+        black_list = ['moreshow', 'plus', 'team', 'work' 'experience', 'esperienza', 'conoscenza', 'clients', 'expérience', 'équipe', 'équipes', 'lavoro', 'business']
 
         stop_words = set(black_list)
         for v in self.lang_settings.values():
