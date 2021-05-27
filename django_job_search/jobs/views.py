@@ -41,11 +41,8 @@ def get_job(request):
     return render(request, 'forms.html', {'form': form})
 
 def update_search(request):
-    print('updating active searches')
-
     Search().update()
-
-    return render(request, 'jobs/update.html')
+    return redirect('/')
 
 class SearchView(ListView):
 

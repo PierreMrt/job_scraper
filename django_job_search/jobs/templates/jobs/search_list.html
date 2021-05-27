@@ -1,10 +1,27 @@
 {% extends "jobs/base.html" %} {% block search %}
 <h2 class="text-2xl text-green-800 font-bold text-center">Active Searches:</h2>
-<div class="p-4 flex flex-row flex-wrap justify-center items-center rounded-md">
+<div class="p-4 flex flex-col flex-wrap justify-center items-center rounded-md">
     {% for search in all_searches %}
     <a href=/results/{{search.search_key}} class="rounded-md mx-2 h-full w-full text-lg text-center py-2 hover:text-green-600">
         <p><span class="font-bold capitalize">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.<br/></p>
     </a> {% endfor %}
     
-    <a href='/update' class='rounded px-4 py-2 bg-green-500 hover:bg-green-700 text-white text-lg mt-4'>update searches</a>
-</div> {% endblock %}
+    <a id='update' href='/update' onclick=updateResults() class='rounded px-4 py-2 bg-green-500 hover:bg-green-700 text-white text-lg mt-4'>update searches</a>
+    <div id='text' class='flex flex-row mt-4 text-gray-700 italic text-lg'></div>
+</div> 
+<script>
+    // var el = document.getElementById('update');
+    // el.onclick = updateResults;
+
+    function updateResults() {
+        document.getElementById('text').innerHTML = `
+        <svg class="animate-spin -ml-1 mr-3 h-7 w-7 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-50" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Updating searches, this might take a while.`;
+    }
+
+</script>
+
+{% endblock %}
