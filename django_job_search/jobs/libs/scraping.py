@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.options import Options
 import time
 import requests
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 
 DATE = datetime.now(tz=timezone.utc)
@@ -33,7 +33,30 @@ class Scraper:
                 job_details[key] = content.find(param['tag'], class_=param['class']).text
             except AttributeError as e:
                 job_details[key] = ""
+        
+        job_details['date'] = self.transform_date(job_details['date'])
         return job_details
+
+    def transform_date(self, raw_date):
+        try:
+            raw_number = int(raw_date.split(' ')[0])
+        except ValueError:
+            print(raw_date)
+            return DATE
+        if 'minute' in raw_date:
+            date = DATE - timedelta(minutes=raw_number)
+        elif 'hour' in raw_date:
+            date = DATE - timedelta(hours=raw_number)
+        elif 'day' in raw_date:
+            date = DATE - timedelta(days=raw_number)
+        elif 'week' in raw_date:
+            date = DATE - timedelta(weeks=raw_number)
+        elif 'month' in raw_date:
+            date = DATE - timedelta(weeks=raw_number * 4)
+        else:
+            date = DATE
+        return date
+
 
     def _create_entry(self, job_details, source, job_id, link):
         entry  = {
@@ -45,7 +68,7 @@ class Scraper:
             'company': job_details['company'],
             'location': job_details['location'],
             'country': self.location,
-            'date': DATE,
+            'date': job_details['date'],
             'link': link}
         return entry
 
@@ -82,7 +105,8 @@ class LinkedIn(Scraper):
                     'title'   : {'tag': 'h3'     , 'class': 'sub-nav-cta__header'},
                     'company' : {'tag': 'a'      , 'class': 'topcard__org-name-link'},
                     'location': {'tag': 'span'   , 'class': 'topcard__flavor--bullet'},
-                    'text'    : {'tag': 'section', 'class': 'description'}
+                    'text'    : {'tag': 'section', 'class': 'description'},
+                    'date'    : {'tag': 'span'   , 'class': 'posted-time-ago__text'}
                     }
                 job_details = self._fetch_details(content, job_details)
                 row = self._create_entry(job_details, 'LinkedIn', job_id, link)
@@ -164,7 +188,8 @@ class Monster(Scraper):
                     'title'   : {'tag': 'h1' , 'class': 'job_title'},
                     'company' : {'tag': 'div', 'class': 'job_company_name tag-line'},
                     'location': {'tag': 'div', 'class': 'location'},
-                    'text'    : {'tag': 'div', 'class': 'job-description'}
+                    'text'    : {'tag': 'div', 'class': 'job-description'},
+                    'date'    : {'tag': 'p'  , 'class': 'details-table__row-value'}
                     }
                 job_details = self._fetch_details(content, job_details)
                 row = self._create_entry(job_details, 'Monster', job_id, link)
