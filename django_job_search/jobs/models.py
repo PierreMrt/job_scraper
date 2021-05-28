@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
 
 class Link(models.Model):
@@ -118,28 +119,20 @@ class Result(models.Model):
         result = Result.objects.all()
         [cached_ids.add(r.job_id) for r in result]
         return cached_ids
-
-    def return_results(self, search_key):
-        return Result.objects.filter(search_key=search_key)
     
     def filtered_results(self, search_key, include, exclude):
         results = Result.objects.filter(search_key=search_key)
         if include is not None and include != '':
             to_include = include.split(', ')
             for kw in to_include:
-                    results = results.filter(description__contains=kw)
+                    results = results.filter(Q(description__contains=kw) | Q(job_title__contains=kw) | Q(location__contains=kw) | Q(company__contains=kw))
         if exclude is not None and exclude != '':
             print('EXCLUDE: ', exclude )
             to_exclude = exclude.split(', ')
             for kw in to_exclude:
-                results = results.exclude(description__contains=kw)   
+                results = results.exclude(Q(description__contains=kw) | Q(job_title__contains=kw) | Q(location__contains=kw) | Q(company__contains=kw))  
         return results.order_by('-date')
-            
 
-
-
-    # def return_included_results(self, search_key):
-        # return Result.objects.filter(search_key=search_key)
 
 def main():
     Result().filtered_results('data_analyst&&france', include='python, SQL')
