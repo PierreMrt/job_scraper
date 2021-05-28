@@ -76,7 +76,6 @@ class SearchCreateView(CreateView):
 
         s = Search(user=self.request.user, job=job, country=country)
         s.new_search()
-        s.update()
 
     def get(self, request):
         if not request.user.is_authenticated:
