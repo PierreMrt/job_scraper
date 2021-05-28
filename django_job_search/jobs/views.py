@@ -74,7 +74,7 @@ class SearchCreateView(CreateView):
         job = job.replace(" ", "_").lower()
         country = country.replace(" ", "_").lower()
 
-        s = Search(user='pierre', job=job, country=country)
+        s = Search(user=self.request.user, job=job, country=country)
         s.new_search()
         s.update()
 

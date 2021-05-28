@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
@@ -31,7 +32,7 @@ class Link(models.Model):
 
 
 class Search(models.Model):
-    user = models.CharField(max_length=255)
+    user = models.ForeignKey(User, db_column="user", on_delete=models.CASCADE)
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
