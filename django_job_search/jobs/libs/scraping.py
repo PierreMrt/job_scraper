@@ -40,7 +40,7 @@ class Scraper:
         try:
             rgx = re.search(r"\d+", raw_date)
             raw_number = int(raw_date[rgx.span()[0]:rgx.span()[1]])
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             print(raw_date)
             return DATE
         if 'minute' in raw_date:
