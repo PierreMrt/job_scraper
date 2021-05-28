@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models import Q
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
@@ -52,8 +51,6 @@ class Search(models.Model):
         for search in searches:
             job, country = self.split_search_key(search.search_key)
             Result().scrap(job, country)
-
-
 
 
 class Result(models.Model):

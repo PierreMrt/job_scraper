@@ -1,56 +1,15 @@
 ## Rendering
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 ## Models
 from django.db.models import Q
-from .models import Link, Search, Result
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
-## HTTP & Response
-from django.http import Http404, HttpResponseRedirect, HttpResponse
-from rest_framework.response import Response
+from .models import Search, Result
 ## Views
-from rest_framework.views import APIView
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView
-from rest_framework.decorators import api_view
-# Forms
-from .forms import JobForm
 # Libs
 from jobs.libs.data_analysis import TextCleaner, token_freq, lang_freq
 
-def get_job(request):
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = JobForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data
-            job = form.cleaned_data['job']
-            country = form.cleaned_data['country']
-            # here we need to pass the data to the model's methods
-            job = job.replace(" ", "_").lower()
-            country = country.replace(" ", "_").lower()
-
-            s = Search(job=job, country=country)
-            s.save()
-            s.user.add(request.user)
-            s.new_search()
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = JobForm()
-
-    return render(request, 'forms.html', {'form': form})
-
-def update_search(request):
-    # actives = Search.objects.all() # update all searches
-    actives = Search.objects.filter(user=request.user) #updates only for user
-    Search().update(actives)
-    return redirect('/')
-
-
 class SearchView(ListView):
-
     context_object_name = 'all_searches'
     template_name = 'jobs/search_list.html'
 
@@ -66,7 +25,6 @@ class SearchView(ListView):
 
 
 class SearchCreateView(CreateView):
-
     model = Search
     fields = ['job', 'country']
     template_name = 'jobs/search_form.html'
@@ -106,7 +64,6 @@ class SearchCreateView(CreateView):
 
 
 class ResultView(ListView):
-
     model = Result
     context_object_name = 'all_results'
     template_name = 'jobs/result_list.html'
@@ -139,6 +96,11 @@ class ResultView(ListView):
         context['info'] = info
         return context
 
+def update_search(request):
+    # actives = Search.objects.all() # update all searches
+    actives = Search.objects.filter(user=request.user) #updates only for user
+    Search().update(actives)
+    return redirect('/')
 
 def get_keywords(results):
     text_list = list([r.description for r in results['object_list']])
