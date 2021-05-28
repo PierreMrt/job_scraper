@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from django.db.models import Q
 from .models import Link, Search, Result
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 ## HTTP & Response
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from rest_framework.response import Response
@@ -44,11 +45,19 @@ def update_search(request):
     Search().update()
     return redirect('/')
 
+
 class SearchView(ListView):
 
     queryset = Search.objects.all()
     context_object_name = 'all_searches'
     template_name = 'jobs/search_list.html'
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('/login')
+        else:
+            return super().get(request)
+
 
 class SearchCreateView(CreateView):
 
@@ -68,6 +77,12 @@ class SearchCreateView(CreateView):
         s = Search(user='pierre', job=job, country=country)
         s.new_search()
         s.update()
+
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('/login')
+        else:
+            return super().get(request)
 
     def form_invalid(self, form):
         response = super().form_invalid(form)
