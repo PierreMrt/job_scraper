@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.db.models import Q
 from .models import Search, Result
 ## Views
+from django.views import View
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 # Libs
@@ -98,9 +99,30 @@ class ResultView(ListView):
 
 def update_search(request):
     # actives = Search.objects.all() # update all searches
-    actives = Search.objects.filter(user=request.user) #updates only for user
-    Search().update(actives)
-    return redirect('/')
+    if request.method == 'GET':
+        actives = Search.objects.filter(user=request.user) #updates only for user
+        Search().update(actives)
+        return redirect('/')
+    elif request.method == 'POST':
+        search = request.POST.getlist('update')[0].split('&&')
+        job = search[0]
+        country = search[1]
+        to_update = Search.objects.filter(Q(job=job), Q(country=country))
+        Search().update(to_update)
+        return redirect('/')
+
+class DeleteSearchView(View):
+    def post(self, request):
+        search = request.POST.getlist('delete')[0].split('&&')
+        job = search[0]
+        country = search[1]
+        to_delete = Search.objects.filter(Q(job=job), Q(country=country))[0]
+        if len(to_delete.user.all()) > 1:
+            request.user.search_set.remove(to_delete)
+        else:
+            to_delete.delete()
+        return redirect('/')
+
 
 def get_keywords(results):
     text_list = list([r.description for r in results['object_list']])
