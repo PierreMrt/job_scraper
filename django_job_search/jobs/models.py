@@ -96,9 +96,9 @@ class Result(models.Model):
     def scrap(self, job, country):
         links = Link().fetch(country)
         cache = self.cached_ids()
+        print(f"Scraping {job} in {country}.")
 
         linkedin = LinkedIn(cache, job, country)
-        print(f"Scraping {job} in {country}.")
         for r in linkedin.results:
             self.add_result(r)
 

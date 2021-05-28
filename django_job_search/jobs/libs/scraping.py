@@ -34,20 +34,20 @@ class Scraper:
             except AttributeError as e:
                 job_details[key] = ""
         
-        job_details['date'] = self.transform_date(job_details['date'])
         return job_details
 
     def transform_date(self, raw_date):
         try:
-            raw_number = int(raw_date.split(' ')[0])
-        except ValueError:
+            rgx = re.search(r"\d+", raw_date)
+            raw_number = int(raw_date[rgx.span()[0]:rgx.span()[1]])
+        except (ValueError, TypeError):
             print(raw_date)
             return DATE
         if 'minute' in raw_date:
             date = DATE - timedelta(minutes=raw_number)
         elif 'hour' in raw_date:
             date = DATE - timedelta(hours=raw_number)
-        elif 'day' in raw_date:
+        elif 'day' in raw_date or 'giorn' in raw_date or 'jour' in raw_date:
             date = DATE - timedelta(days=raw_number)
         elif 'week' in raw_date:
             date = DATE - timedelta(weeks=raw_number)
@@ -94,6 +94,12 @@ class LinkedIn(Scraper):
 
         return job_ids
 
+    def _fetch_details(self, content, job_details):
+        job_details = super()._fetch_details(content, job_details)
+        job_details['date'] = self.transform_date(job_details['date'])
+        return job_details
+
+
     def _scrap_results(self):
         url = "https://www.linkedin.com/jobs/view/{job_id}/"
         count = 0
@@ -114,6 +120,57 @@ class LinkedIn(Scraper):
                 yield row
 
         print(f'added {count} offers from LinkedIn')
+
+
+class Monster(Scraper):
+    def __init__(self, links, cache, job_title, location):
+        super().__init__(cache, job_title, location)
+        self.extension = links[0]
+
+        self.results_page_url = f"{links[1]}q={self.job_title}&page=10&geo=0"
+        self.id_param = {
+            'tag'  : 'a',
+            'class': "view-details-link", 
+            'attr' : 'href'}
+        if links[1] != 'None': # If a country doesn't have monster
+            self.job_ids = self._get_ids()
+            self.results = self._scrap_results()
+        
+    def _fetch_details(self, content, job_details):        
+        job_details = super()._fetch_details(content, job_details)
+        raw_date = job_details['date']
+        rgx = re.finditer(r"\d+", raw_date)
+        try:
+            rgx = [r for r in rgx][-1]
+            beg = rgx.span()[0]
+            end = rgx.span()[1]
+            raw_date = raw_date[beg:end] + raw_date[end+1:end+8]
+        except IndexError:
+            raw_date = DATE
+
+        job_details['date'] = self.transform_date(raw_date)
+        return job_details
+
+    def _scrap_results(self):
+        count = 0
+        for job_id in self.job_ids:
+            if job_id not in self.cache:
+                link = f"https://www.monster.{self.extension}{job_id}"
+                content = bs4_content(link)
+
+                job_details = {
+                    'title'   : {'tag': 'h1' , 'class': 'job_title'},
+                    'company' : {'tag': 'div', 'class': 'job_company_name tag-line'},
+                    'location': {'tag': 'div', 'class': 'location'},
+                    'text'    : {'tag': 'div', 'class': 'job-description'},
+                    'date'    : {'tag': 'div', 'class': 'job-details-container'}
+                    }
+                job_details = self._fetch_details(content, job_details)
+                row = self._create_entry(job_details, 'Monster', job_id, link)
+                count += 1
+                yield row
+
+        print(f'added {count} offers from Monster')
 
 
 class Indeed(Scraper):
@@ -160,44 +217,6 @@ class Indeed(Scraper):
         return job_details
 
 
-
-class Monster(Scraper):
-    def __init__(self, links, cache, job_title, location):
-        super().__init__(cache, job_title, location)
-
-        self.extension = links[0]
-
-        self.results_page_url = f"{links[1]}q={self.job_title}&page=10&geo=0"
-        self.id_param = {
-            'tag'  : 'a',
-            'class': "view-details-link", 
-            'attr' : 'href'}
-
-        if links[1] != 'None': # If a country doesn't have monster
-            self.job_ids = self._get_ids()
-            self.results = self._scrap_results()
-
-    def _scrap_results(self):
-        count = 0
-        for job_id in self.job_ids:
-            if job_id not in self.cache:
-                link = f"https://www.monster.{self.extension}{job_id}"
-                content = bs4_content(link)
-
-                job_details = {
-                    'title'   : {'tag': 'h1' , 'class': 'job_title'},
-                    'company' : {'tag': 'div', 'class': 'job_company_name tag-line'},
-                    'location': {'tag': 'div', 'class': 'location'},
-                    'text'    : {'tag': 'div', 'class': 'job-description'},
-                    'date'    : {'tag': 'p'  , 'class': 'details-table__row-value'}
-                    }
-                job_details = self._fetch_details(content, job_details)
-                row = self._create_entry(job_details, 'Monster', job_id, link)
-                count += 1
-                yield row
-
-        print(f'added {count} offers from Monster')
-
 def selenium_content(url):
     options = Options()
     options.add_argument("--headless")
@@ -221,4 +240,11 @@ def bs4_content(url):
     return content
 
 if __name__ == '__main__':
-    LinkedIn(None, [], 'data_analyst', 'france')
+    text ='30+ giorni fa'
+    rgx = re.finditer(r"\d+", text)
+    rgx = [r for r in rgx][-1]
+    print(l)
+    beg = l.span()[0]
+    end = l.span()[1]
+    print(text[beg:end] + text[end+1:end+8])
+    print(text[beg:end+8])
