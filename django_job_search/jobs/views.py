@@ -49,7 +49,6 @@ def update_search(request):
 
 class SearchView(ListView):
 
-    queryset = Search.objects.all()
     context_object_name = 'all_searches'
     template_name = 'jobs/search_list.html'
 
@@ -58,6 +57,10 @@ class SearchView(ListView):
             return redirect('/login')
         else:
             return super().get(request)
+
+    def get_queryset(self):
+        queryset = Search.objects.filter(user=self.request.user)
+        return queryset
 
 
 class SearchCreateView(CreateView):
@@ -75,8 +78,16 @@ class SearchCreateView(CreateView):
         job = job.replace(" ", "_").lower()
         country = country.replace(" ", "_").lower()
 
-        s = Search(user=self.request.user, job=job, country=country)
-        s.new_search()
+        active_search = Search.objects.filter(Q(job=job), Q(country=country))
+        if len(active_search) > 0:
+            print('add user')
+            active_search[0].user.add(self.request.user)
+        else:
+            print('create search')
+            s = Search(job=job, country=country)
+            s.save()
+            s.user.add(self.request.user)
+        return redirect('/')
 
     def get(self, request):
         if not request.user.is_authenticated:

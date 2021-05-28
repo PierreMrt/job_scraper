@@ -48,12 +48,12 @@ class Search(models.Model):
         s = search_key.split('&&')
         return s[0], s[1]
 
-    def new_search(self):
-        actives = [s.search_key for s in self.active_search()]
-        if self.search_key not in actives:
-            Result().scrap(self.job, self.country)
-        else:
-            print(f'Search for {self.job} in {self.country} is already active.')
+    # def new_search(self):
+    #     actives = [s.search_key for s in self.active_search()]
+    #     if len(Result.objects.filter(search=self)) == 0:
+    #         Result().scrap(self.job, self.country)
+    #     else:
+    #         print(f'Search for {self.job} in {self.country} is already active.')
         
     def active_search(self):
         actives = set()
