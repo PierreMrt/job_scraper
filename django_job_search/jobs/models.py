@@ -133,7 +133,7 @@ class Result(models.Model):
             to_exclude = exclude.split(', ')
             for kw in to_exclude:
                 results = results.exclude(description__contains=kw)   
-        return results
+        return results.order_by('-date')
             
 
 
