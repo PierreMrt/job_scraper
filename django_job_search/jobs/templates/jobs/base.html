@@ -15,12 +15,12 @@
     <link rel="stylesheet" href="">
 </head>
 
-<body class="box-content">
+<body class="box-content h-screen">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <nav class="w-100 px-4 py-6 md:pl-32 md:pr-8 bg-green-700 text-white flex flex-row flex-nowrap justify-between self-center">
+    <nav class="w-100 px-4 h-20 py-6 md:pl-32 md:pr-8 bg-green-700 text-white flex flex-row flex-nowrap justify-between self-center">
 
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
         <ul class="flex flew-row flex-wrap">
@@ -36,7 +36,7 @@
         </ul>
     </nav>
 
-    <div id="main" class="w-100 py-4 px-4 md:px-32 bg-gray-100">
+    <div id="main" class="w-100 h-screen py-4 px-4 md:px-32 bg-gray-100">
         
         <div id="form" class="mt-12">
             {% block content %}{% endblock %}
@@ -59,6 +59,9 @@
         </div>
         <div id="register" class="mt-12 mx-auto">
             {% block register %}{% endblock %}
+        </div>
+        <div id="delete" class="mt-12 mx-auto">
+            {% block delete %}{% endblock %}
         </div>
     </div>
 

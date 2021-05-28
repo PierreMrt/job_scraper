@@ -11,9 +11,8 @@
                 {% csrf_token %}
                 <button type="submit" onclick=updateResults() class='text-sm text-black ml-8 italic hover:text-green-600' name='update' value='{{search.job}}&&{{search.country}}'>update</button>
             </form>
-            <form class="text-center" action="delete_search/" method="post">
-                {% csrf_token %}
-                <button type="submit" onclick=updateResults() class='text-base font-bold text-red-600 ml-8 italic hover:text-black' name='delete' value='{{search.job}}&&{{search.country}}'>X</button>
+            <form class="text-center" action="delete_search/" method="get">
+                <button type="submit" class='text-base font-bold text-red-600 ml-8 italic hover:text-black' name='delete' value='{{search.job}}&&{{search.country}}'>X</button>
             </form>
         </span>
     </div>

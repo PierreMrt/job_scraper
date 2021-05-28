@@ -102,26 +102,42 @@ def update_search(request):
     if request.method == 'GET':
         actives = Search.objects.filter(user=request.user) #updates only for user
         Search().update(actives)
-        return redirect('/')
-    elif request.method == 'POST':
+    elif request.method == 'POST': # Update onmy one list
         search = request.POST.getlist('update')[0].split('&&')
         job = search[0]
         country = search[1]
         to_update = Search.objects.filter(Q(job=job), Q(country=country))
         Search().update(to_update)
-        return redirect('/')
+    return redirect('/')
 
-class DeleteSearchView(View):
-    def post(self, request):
-        search = request.POST.getlist('delete')[0].split('&&')
+class DeleteSearchView(ListView):
+    template_name = 'jobs/delete_search.html'
+    context_object_name = 'to_delete'
+
+    def get_queryset(self):
+        search = self.request.GET.getlist('delete')[0].split('&&')
         job = search[0]
         country = search[1]
         to_delete = Search.objects.filter(Q(job=job), Q(country=country))[0]
-        if len(to_delete.user.all()) > 1:
-            request.user.search_set.remove(to_delete)
-        else:
-            to_delete.delete()
-        return redirect('/')
+        return to_delete
+
+    def post(self, request):
+        try:
+            search = request.POST.getlist('yes')[0].split('&&')
+            job = search[0]
+            country = search[1]
+            to_delete = Search.objects.filter(Q(job=job), Q(country=country))[0]
+            if len(to_delete.user.all()) > 1:
+                request.user.search_set.remove(to_delete)
+            else:
+                to_delete.delete()
+            return redirect('/')
+        except IndexError as e:
+            print(e)
+            redirect('/')
+
+    def get(self, request):
+        return super().get(request)
 
 
 def get_keywords(results):
