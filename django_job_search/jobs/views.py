@@ -31,9 +31,10 @@ def get_job(request):
             job = job.replace(" ", "_").lower()
             country = country.replace(" ", "_").lower()
 
-            s = Search(user=request.user, job=job, country=country)
+            s = Search(job=job, country=country)
+            s.save()
+            s.user.add(request.user)
             s.new_search()
-            s.update()
 
     # if a GET (or any other method) we'll create a blank form
     else:

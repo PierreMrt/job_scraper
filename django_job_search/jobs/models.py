@@ -32,7 +32,7 @@ class Link(models.Model):
 
 
 class Search(models.Model):
-    user = models.ForeignKey(User, db_column="user", on_delete=models.CASCADE)
+    user = models.ManyToManyField(User, db_column="user")
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
 
@@ -51,12 +51,9 @@ class Search(models.Model):
     def new_search(self):
         actives = [s.search_key for s in self.active_search()]
         if self.search_key not in actives:
-            self.save()
-            print(f'{self.search_key} added to searches')
             Result().scrap(self.job, self.country)
         else:
             print(f'Search for {self.job} in {self.country} is already active.')
-            Result().scrap(self.job, self.country)
         
     def active_search(self):
         actives = set()
