@@ -43,7 +43,9 @@ def get_job(request):
     return render(request, 'forms.html', {'form': form})
 
 def update_search(request):
-    Search().update()
+    # actives = Search.objects.all() # update all searches
+    actives = Search.objects.filter(user=request.user) #updates only for user
+    Search().update(actives)
     return redirect('/')
 
 
