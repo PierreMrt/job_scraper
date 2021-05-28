@@ -70,7 +70,7 @@ class Search(models.Model):
 
 class Result(models.Model):
     search_key = models.CharField(max_length=255)
-    search = models.ForeignKey(Search, related_name='results', on_delete=models.PROTECT)
+    search = models.ForeignKey(Search, related_name='results', on_delete=models.CASCADE)
     source = models.CharField(max_length=255, null=True, blank=True)
     job_id = models.CharField(max_length=255, null=True, blank=True)
     job_title = models.CharField(max_length=255, null=True, blank=True)
