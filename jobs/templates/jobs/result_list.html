@@ -1,4 +1,5 @@
 {% extends "jobs/base.html" %} {% block results %}
+<span id="#top"></span>
 <h2 class="text-2xl text-gray-700 font-extrabold"><span class="text-blue-700 capitalize">{{info.job}}</span> in <span class="text-blue-700 capitalize">{{info.country}}</span></h2>
 <h3 class="text-xl text-blue-700 font-light mb-4">({{ all_results |length }} results)</h3>
 <div>
@@ -17,52 +18,47 @@
 <p class="italic text-gray-700">excluding: {{ info.exclude }}</p>
 {% endif %}
 
-<div class="flex flex-col mt-6 cursor-pointer">
-    <div class="">
-        {% for result in all_results %} {% cycle 'col-start-1' 'col-start-2' as col_nb silent %}
-        <div class="p-3 mb-2 rounded bg-white shadow {{ col_nb }} hover:bg-gray-200">
-            <a href={{result.link}} class="">
-                <span class="font-bold text-blue-700">{{result.job_title}}<br></span>
-                <span class="font-semibold text-gray-800">{{result.company}}<br></span>
-                <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
-                <span class="mt-2">{{result.description|slice:150}}...<br></span>
+<div class="flex flex-col mt-6">
+    <a href="#keywords" class="text-blue-800 hover:text-gray-900 mb-2">Get more stats</a> {% for result in all_results %} {% cycle 'col-start-1' 'col-start-2' as col_nb silent %}
+    <div class="p-3 mb-2 rounded bg-white shadow {{ col_nb }} hover:bg-gray-200 cursor-pointer">
+        <a href={{result.link}} class="">
+            <span class="font-bold text-blue-700">{{result.job_title}}<br></span>
+            <span class="font-semibold text-gray-800">{{result.company}}<br></span>
+            <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
+            <span class="mt-2">{{result.description|slice:150}}...<br></span>
 
-            </a>
-
-        </div>
-
-        {% endfor %} {% if all_results|length == 0 %}
-        <div class="">No results ... </div>
-        {% endif %}
+        </a>
 
     </div>
-    <div class="">
-        <div class="rounded border-4 border-double border-green-600 ml-16">
-            <h3 class="text-xl text-green-700 font-bold text-center my-4">Top 10 keywords</h3>
-            <table class="table-auto my-4  mx-auto capitalize font-bold">
-                <tbody>
-                    {% for kw in info.keywords %}
-                    <tr>
-                        <td>{{ kw.0 }}:</td>
-                        <td>{{ kw.1 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class='rounded border-4 border-double border-green-600 mt-8 ml-16'>
-            <h3 class="text-xl text-green-700 font-bold text-center my-4">Languages frequency</h3>
-            <table class='table-auto my-4  mx-auto capitalize font-bold'>
-                <tbody>
-                    {% for k, v in info.langs.items %}
-                    <tr>
-                        <td>{{ k }}:</td>
-                        <td>{{ v }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+    {% endfor %} {% if all_results|length == 0 %}
+    <div class="">No results ... </div>
+    {% endif %}
+
+    <div id="keywords" class="mt-4 mb-2">
+        <h3 class="text-xl text-blue-700 font-extrabold my-4">Top 10 keywords</h3>
+        <div class="flex flex-col flex-nowrap">
+            {% for kw in info.keywords %}
+            <div class="flex flex-row flew-nowrap">
+                <div class="capitalize">{{ kw.0 }}:&nbsp;</div>
+                <div class="font-bold">{{ kw.1 }}</div>
+            </div>
+            {% endfor %}
         </div>
     </div>
+    <div>
+        <h3 class="text-xl text-blue-700 font-extrabold my-4">Languages frequency</h3>
+        <div>
+            <div class="flex flex-col flex-nowrap">
+                {% for k, v in info.langs.items %}
+                <div class="flex flex-row flew-nowrap">
+                    <div class="capitalize">{{ k }}:&nbsp;</div>
+                    <div class="font-bold">{{ v }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <a href="#top" class="text-blue-800 hover:text-gray-900 mt-4">Go back to top</a>
 </div>
 {% endblock %}
