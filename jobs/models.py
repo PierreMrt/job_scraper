@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
 from jobs.libs.scraping import LinkedIn, Monster, Indeed
+import threading
 
 class Link(models.Model):
     country = models.CharField(max_length=255)
@@ -84,20 +85,28 @@ class Result(models.Model):
         cache = self.cached_ids()
         print(f"Scraping {job} in {country}.")
 
+        t1 = threading.Thread(target=self.scrap_linkedin,args=(cache, job, country,))
+        t1.start()
+
+        t2 = threading.Thread(target=self.scrap_monster,args=(links, cache, job, country,))
+        t2.start()
+
+        t1.join()
+        t2.join()
+
+    def scrap_linkedin(self, cache, job, country):
         linkedin = LinkedIn(cache, job, country)
         for r in linkedin.results:
             self.add_result(r)
-
-        # indeed = Indeed(links, cache, job, country)
-        # for r in indeed.results:
-        #     self.add_result(r)
-
+    
+    def scrap_monster(self, links, cache, job, country):
         monster = Monster(links, cache, job, country)
         try:
             for r in monster.results:
                 self.add_result(r)
         except AttributeError:
             print(f"Skipping monster as {country} doesn't have it.")
+
 
     def cached_ids(self):
         cached_ids = set()
