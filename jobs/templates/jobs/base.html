@@ -20,23 +20,26 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <nav class="w-100 px-4 py-5 md:pl-32 md:pr-8 bg-gray-800 text-white flex flex-row flex-nowrap justify-between self-center">
+    <nav class="w-100 px-4 py-5 md:pl-16 lg:pl-32 md:pr-8 bg-gray-800 text-white flex flex-row flex-nowrap justify-between self-center">
 
         <h1 class="font-bold text-2xl cursor-pointer"><a href="/">Jobs.py</a></h1>
         <ul class="flex flew-row flex-wrap text-sm items-center">
-            <li class="font-bold"><a href="/add" class="rounded px-3 py-2 border-2 border-blue-700 align-middle text-blue-700 hover:text-white hover:bg-blue-700">NEW JOB</a></li>
+            {% load static %}
+            <li class="font-bold">
+                <a href="/add" class="block align-middle text-white hover:text-blue-600">NEW JOB</a>
+            </li>
             {% if user.is_authenticated %}
-            <li class="ml-3 font-bold"><a href="/profile">PROFILE</a></li>
-            <li class="ml-3 font-bold"><a href="/logout">LOG OUT</a></li>
+            <li class="ml-3 font-bold hover:text-blue-600"><a href="/profile">PROFILE</a></li>
+            <li class="ml-3 font-bold hover:text-blue-600"><a href="/logout">LOG OUT</a></li>
             {% else %}
-            <li class="ml-3 font-bold"><a href="/login">LOG IN</a></li>
-            <li class="ml-3 font-bold"><a href="/register">REGISTER</a></li>
+            <li class="ml-3 font-bold hover:text-blue-600"><a href="/login">LOG IN</a></li>
+            <li class="ml-3 font-bold hover:text-blue-600"><a href="/register">REGISTER</a></li>
             {% endif %}
 
         </ul>
     </nav>
 
-    <div id="main" class="w-100 py-4 px-4 md:px-32">
+    <div id="main" class="w-100 py-4 px-4 md:px-16 lg:px-32">
 
         <div id="form" class="mt-6">
             {% block content %}{% endblock %}
