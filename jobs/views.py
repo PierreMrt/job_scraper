@@ -10,8 +10,9 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 # Libs
 from jobs.libs.data_analysis import TextCleaner, token_freq, lang_freq
-
+# Helpers
 import threading
+from datetime import datetime, timezone
 
 class SearchView(ListView):
     context_object_name = 'all_searches'
@@ -48,7 +49,7 @@ class SearchCreateView(CreateView):
             active_search[0].user.add(self.request.user)
         else:
             print('create search')
-            s = Search(job=job, country=country)
+            s = Search(job=job, country=country, update_date=DATE)
             s.save()
             s.user.add(self.request.user)
         update_search(None, job=job, country=country)
@@ -125,7 +126,12 @@ def update_search(request, **kwargs):
         job = search[0]
         country = search[1]
         to_update = Search.objects.filter(Q(job=job), Q(country=country))
-
+    
+    for search in to_update:
+        search.update_date = datetime.now(tz=timezone.utc)
+        search.save()
+        print(datetime.now(tz=timezone.utc))
+        print(search.update_date)
     t = threading.Thread(target=Search().update,args=[to_update],daemon=True)
     t.start()
     return redirect('/')

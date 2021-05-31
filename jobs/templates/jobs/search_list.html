@@ -8,6 +8,11 @@
             <div class="flex flex-col flex-nowrap">
                 <span class="font-bold capitalize">{{ search.job }} <span class="font-extralight">({{ search.results.count }})</span></span>
                 <span class="capitalize">{{search.country}}</span>
+                {% if  search.update_date|timesince == search.update_date|timeuntil %}
+                <p class='text-gray-800 italic text-xs'>Last updated: ongoing</p>
+                {% else %}
+                <p class='text-gray-800 italic text-xs'>Last updated: {{ search.update_date|timesince }} ago.</p>
+                {% endif %}
             </div>
         </a>
         <div class="flex flex-col border-l-2">

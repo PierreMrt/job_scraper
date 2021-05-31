@@ -35,6 +35,7 @@ class Search(models.Model):
     user = models.ManyToManyField(User, db_column="user")
     job = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
+    update_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.search_key
