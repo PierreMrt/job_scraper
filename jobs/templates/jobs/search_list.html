@@ -1,25 +1,24 @@
 {% extends "jobs/base.html" %} {% block search %}
-<h2 class="text-2xl text-green-800 font-bold text-center">Active Searches:</h2>
-<div class="p-4 flex flex-col flex-wrap w-1/2 mx-auto items-center rounded-md">
+<h2 class="text-3xl mb-4 text-grey-900 font-bold">Active Searches</h2>
+<a id='update' href='/update' onclick=updateResults() class='text-white rounded font-bold text-sm px-4 py-2 mx-auto text-center bg-blue-700 hover:bg-blue-800'>UPDATE ALL</a>
+<div class="mt-2 flex flex-col flex-wrap mx-auto items-center rounded-md">
     {% for search in all_searches %}
-    <div class='my-2 flex flex-row bg-white shadow w-2/3 p-2'>
-        <a href=/results/{{search.search_key}} class="rounded-md h-full text-center w-3/4 text-lg py-2 hover:text-green-600">
+    <div class='my-2 p-2 flex flex-row bg-white shadow'>
+        <a href=/results/{{search.search_key}} class="rounded-md h-full text-center w-3/4 text-lg py-2 hover:text-blue-700">
             <p><span class="font-bold capitalize">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.</p>
         </a>
         <span class='flex flex-col w-1/4'>
+            <form class="text-center" action="delete_search/" method="get">
+                <button type="submit" class='text-base font-mono font-bold text-red-600 ml-8 hover:text-black' name='delete' value='{{search.job}}&&{{search.country}}'>X</button>
+            </form>
             <form class="text-center" action="update/" method="post">
                 {% csrf_token %}
-                <button type="submit" onclick=updateResults() class='text-sm text-black ml-8 italic hover:text-green-600' name='update' value='{{search.job}}&&{{search.country}}'>update</button>
-            </form>
-            <form class="text-center" action="delete_search/" method="get">
-                <button type="submit" class='text-base font-bold text-red-600 ml-8 italic hover:text-black' name='delete' value='{{search.job}}&&{{search.country}}'>X</button>
+                <button type="submit" onclick=updateResults() class='text-sm text-black ml-8 hover:text-blue-700' name='update' value='{{search.job}}&&{{search.country}}'>update</button>
             </form>
         </span>
     </div>
     {% endfor %}
 
-    <a id='update' href='/update' onclick=updateResults() class='rounded px-4 py-2 w-1/2 mx-auto text-center bg-green-500 hover:bg-green-700 text-white text-lg mt-4'>update searches</a>
-    <div id='text' class='flex flex-row mt-4 text-gray-700 italic text-lg'></div>
 </div>
 <script>
     // var el = document.getElementById('update');

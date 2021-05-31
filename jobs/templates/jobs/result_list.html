@@ -1,69 +1,64 @@
 {% extends "jobs/base.html" %} {% block results %}
-    <h2 class="text-2xl text-green-600 font-extrabold text-center">Results for <span class="text-green-800 capitalize">{{info.job}}</span> in <span class="text-green-800 capitalize">{{info.country}}</span></h2>
-    <h3 class="text-xl text-green-800 font-extrabold text-center mb-8">({{ all_results |length }} results)</h3>
-    <div>
-        <form class="my-2 flex flex-row space-x-4" action="" method="get">
-            <!-- {% csrf_token %} -->
-            <div class='mb-2'><p class='font-bold text-gray-700'>Include</p><input name='include' type="text" placeholder="Include ..." class='rounded border border-gray-300 p-1'></div>
-            <div class='mb-2'><p class='font-bold text-gray-700'>Exclude</p><input name='exclude' type="text" placeholder="Exclude ..." class='rounded border border-gray-300 p-1'></div>
-            <button type="submit" class="bg-green-500 rounded px-4 mt-4 mb-2 text-lg text-white cursor-pointer hover:bg-green-700" value="submit">Filter</button>
-        </form>
+<span id="#top"></span>
+<h2 class="text-2xl text-gray-700 font-extrabold"><span class="text-blue-700 capitalize">{{info.job}}</span> in <span class="text-blue-700 capitalize">{{info.country}}</span></h2>
+<h3 class="text-xl text-blue-700 font-light mb-4">({{ all_results |length }} results)</h3>
+<div>
+    <form class="my-2 flex flex-col flex-nowrap" action="" method="get">
+        <!-- {% csrf_token %} -->
+        <div class="mb-2">
+            <p class="font-bold text-gray-700">Include</p><input name="include" type="text" placeholder="python, javascript, telework" class="textinput border-gray-300 rounded-lg px-4 w-full text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2"></div>
+        <div class="mb-2">
+            <p class="font-bold text-gray-700">Exclude</p><input name="exclude" type="text" placeholder="full stack, .NET, ruby" class='textinput border-gray-300 rounded-lg px-4 w-full text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2'></div>
+        <button type="submit" class="bg-blue-700 rounded px-3 py-2 mb-2 text-sm font-bold text-white cursor-pointer hover:bg-blue-600" value="submit">FILTER</button>
+    </form>
+</div>
+{% if info.include %}
+<p class="italic text-gray-700">including: {{ info.include }}</p>
+{% endif %} {% if info.exclude %}
+<p class="italic text-gray-700">excluding: {{ info.exclude }}</p>
+{% endif %}
+
+<div class="flex flex-col mt-6">
+    <a href="#keywords" class="text-blue-800 hover:text-gray-900 mb-2">Get more stats</a> {% for result in all_results %} {% cycle 'col-start-1' 'col-start-2' as col_nb silent %}
+    <div class="p-3 mb-2 rounded bg-white shadow {{ col_nb }} hover:bg-gray-200 cursor-pointer">
+        <a href={{result.link}} class="">
+            <span class="font-bold text-blue-700">{{result.job_title}}<br></span>
+            <span class="font-semibold text-gray-800">{{result.company}}<br></span>
+            <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
+            <span class="mt-2">{{result.description|slice:150}}...<br></span>
+
+        </a>
+
     </div>
-    {% if info.include %}
-    <p class='italic text-gray-700'>including: {{ info.include }}</p>
-    {% endif %}
-    {% if info.exclude %}
-    <p class='italic text-gray-700'>excluding: {{ info.exclude }}</p>
+
+    {% endfor %} {% if all_results|length == 0 %}
+    <div class="">No results ... </div>
     {% endif %}
 
-    <div class='flex flex-row'>
-        <div class="grid grid-col-2 gap-4 w-3/4 auto-cols-fr">
-            {% for result in all_results %}
-            {% cycle 'col-start-1' 'col-start-2' as col_nb silent %}
-            <div class='bg-green-100 p-1 pl-2 shadow-lg {{ col_nb }} hover:bg-green-200'>
-                <a href={{result.link}} class="">
-                    <span class='font-bold text-green-700'>{{result.job_title}}<br></span>
-                    <span class="font-semibold text-gray-800">{{result.company}}<br></span>
-                    <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
-                    <span class="mt-2">{{result.description|slice:150}}<br></span>
-                    
-                </a>
-
+    <div id="keywords" class="mt-4 mb-2">
+        <h3 class="text-xl text-blue-700 font-extrabold my-4">Top 10 keywords</h3>
+        <div class="flex flex-col flex-nowrap">
+            {% for kw in info.keywords %}
+            <div class="flex flex-row flew-nowrap">
+                <div class="capitalize">{{ kw.0 }}:&nbsp;</div>
+                <div class="font-bold">{{ kw.1 }}</div>
             </div>
-            
             {% endfor %}
-            {% if all_results|length == 0 %}
-            <div class='h-1/2'>No results ... </div>
-            {% endif %}
-
         </div>
-        <div class='w-1/4'>
-            <div class='rounded border-4 border-double border-green-600 ml-16'>
-                <h3 class="text-xl text-green-700 font-bold text-center my-4">Top 10 keywords</h3>
-                <table class='table-auto my-4 w-2/3 mx-auto capitalize font-bold'>
-                    <tbody>
-                        {% for kw in info.keywords %}
-                        <tr>
-                            <td>{{ kw.0 }}:</td>
-                            <td>{{ kw.1 }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class='rounded border-4 border-double border-green-600 mt-8 ml-16'>
-                <h3 class="text-xl text-green-700 font-bold text-center my-4">Languages frequency</h3>
-                <table class='table-auto my-4 w-2/3 mx-auto capitalize font-bold'>
-                    <tbody>
-                        {% for k, v in info.langs.items %}
-                        <tr>
-                            <td>{{ k }}:</td>
-                            <td>{{ v }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    </div>
+    <div>
+        <h3 class="text-xl text-blue-700 font-extrabold my-4">Languages frequency</h3>
+        <div>
+            <div class="flex flex-col flex-nowrap">
+                {% for k, v in info.langs.items %}
+                <div class="flex flex-row flew-nowrap">
+                    <div class="capitalize">{{ k }}:&nbsp;</div>
+                    <div class="font-bold">{{ v }}</div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
+    <a href="#top" class="text-blue-800 hover:text-gray-900 mt-4">Go back to top</a>
+</div>
 {% endblock %}
