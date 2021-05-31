@@ -1,4 +1,5 @@
 ## Rendering
+import re
 from django.shortcuts import redirect
 ## Models
 from django.db.models import Q
@@ -9,6 +10,8 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView
 # Libs
 from jobs.libs.data_analysis import TextCleaner, token_freq, lang_freq
+
+import threading
 
 class SearchView(ListView):
     context_object_name = 'all_searches'
@@ -48,6 +51,7 @@ class SearchCreateView(CreateView):
             s = Search(job=job, country=country)
             s.save()
             s.user.add(self.request.user)
+        update_search(None, job=job, country=country)
         return redirect('/')
 
     def get(self, request):
@@ -97,17 +101,33 @@ class ResultView(ListView):
         context['info'] = info
         return context
 
-def update_search(request):
-    # actives = Search.objects.all() # update all searches
-    if request.method == 'GET':
-        actives = Search.objects.filter(user=request.user) #updates only for user
-        Search().update(actives)
-    elif request.method == 'POST': # Update onmy one list
+def update_search(request, **kwargs):
+    """ Launch a separate thread, to scrap and update requested search
+
+    Args:
+        request ([request]): request.method can be GET, to update all user' search or POST tu update a specific search
+        kwargs (dict): if call is coming from another view, we pass the argument via kwargs instead of request
+
+    Returns:
+        request: redirect user on search list
+    """
+    #  to_update = Search.objects.all() # update all searches
+
+    if 'job' in kwargs:
+        job = kwargs['job']
+        country = kwargs['country']
+        to_update = Search.objects.filter(Q(job=job), Q(country=country))
+
+    elif request.method == 'GET':# updates only for user
+        to_update = Search.objects.filter(user=request.user) 
+    elif request.method == 'POST': # Update only requested list
         search = request.POST.getlist('update')[0].split('&&')
         job = search[0]
         country = search[1]
         to_update = Search.objects.filter(Q(job=job), Q(country=country))
-        Search().update(to_update)
+
+    t = threading.Thread(target=Search().update,args=[to_update],daemon=True)
+    t.start()
     return redirect('/')
 
 class DeleteSearchView(ListView):
@@ -149,4 +169,3 @@ def get_keywords(results):
 def get_lang_freq(results):
     text_list = list([r.description for r in results['object_list']])
     return lang_freq(text_list)
-    
