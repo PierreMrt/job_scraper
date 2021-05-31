@@ -3,13 +3,15 @@
 <h2 class="text-2xl text-gray-700 font-extrabold"><span class="text-blue-700 capitalize">{{info.job}}</span> in <span class="text-blue-700 capitalize">{{info.country}}</span></h2>
 <h3 class="text-xl text-blue-700 font-light mb-4">({{ all_results |length }} results)</h3>
 <div>
-    <form class="my-2 flex flex-col flex-nowrap" action="" method="get">
+    <form class="my-2 flex flex-col lg:flex-row" action="" method="get">
         <!-- {% csrf_token %} -->
         <div class="mb-2">
-            <p class="font-bold text-gray-700">Include</p><input name="include" type="text" placeholder="python, javascript, telework" class="textinput border-gray-300 rounded-lg px-4 w-full text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2"></div>
-        <div class="mb-2">
-            <p class="font-bold text-gray-700">Exclude</p><input name="exclude" type="text" placeholder="full stack, .NET, ruby" class='textinput border-gray-300 rounded-lg px-4 w-full text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2'></div>
-        <button type="submit" class="bg-blue-700 rounded px-3 py-2 mb-2 text-sm font-bold text-white cursor-pointer hover:bg-blue-600" value="submit">FILTER</button>
+            <p class="font-bold text-gray-700">Include</p><input name="include" type="text" placeholder="python, javascript, telework" class="textinput border-gray-300 rounded-lg px-4 w-full lg:w-min text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2">
+        </div>
+        <div class="mb-2 ml-2">
+            <p class="font-bold text-gray-700">Exclude</p><input name="exclude" type="text" placeholder="full stack, .NET, ruby" class='textinput border-gray-300 rounded-lg px-4 w-full lg:w-min text-gray-700 border appearance-none leading-normal bg-white block focus:outline-none py-2'>
+        </div>
+        <button type="submit" class="bg-blue-700 rounded px-3 py-2 ml-2 mb-2 text-sm font-bold h-10 self-end text-white cursor-pointer hover:bg-blue-600" value="submit">FILTER</button>
     </form>
 </div>
 {% if info.include %}
@@ -18,44 +20,48 @@
 <p class="italic text-gray-700">excluding: {{ info.exclude }}</p>
 {% endif %}
 
-<div class="flex flex-col mt-6">
-    <a href="#keywords" class="text-blue-800 hover:text-gray-900 mb-2">Get more stats</a> {% for result in all_results %} {% cycle 'col-start-1' 'col-start-2' as col_nb silent %}
-    <div class="p-3 mb-2 rounded bg-white shadow {{ col_nb }} hover:bg-gray-200 cursor-pointer">
-        <a href={{result.link}} class="">
-            <span class="font-bold text-blue-700">{{result.job_title}}<br></span>
-            <span class="font-semibold text-gray-800">{{result.company}}<br></span>
-            <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
-            <span class="mt-2">{{result.description|slice:150}}...<br></span>
-
-        </a>
-
-    </div>
-
-    {% endfor %} {% if all_results|length == 0 %}
-    <div class="">No results ... </div>
-    {% endif %}
-
-    <div id="keywords" class="mt-4 mb-2">
-        <h3 class="text-xl text-blue-700 font-extrabold my-4">Top 10 keywords</h3>
-        <div class="flex flex-col flex-nowrap">
-            {% for kw in info.keywords %}
-            <div class="flex flex-row flew-nowrap">
-                <div class="capitalize">{{ kw.0 }}:&nbsp;</div>
-                <div class="font-bold">{{ kw.1 }}</div>
+<div class="mt-6">
+    <a href="#keywords" class="text-blue-800 hover:text-gray-900 mb-2">Get more stats</a>
+    <div class="flex flex-col lg:flex-row">
+        <div class="lg:w-2/3">
+            {% for result in all_results %}
+            <div class="p-3 mb-2 flex flex-row flew-nowrap rounded bg-white shadow {{ col_nb }} hover:bg-gray-200 cursor-pointer">
+                <a href={{result.link}} class="">
+                    <span class="font-bold text-blue-700">{{result.job_title}}<br></span>
+                    <span class="font-semibold text-gray-800">{{result.company}}<br></span>
+                    <span class="italic text-gray-700">{{result.location}} - {{result.date}}<br></span>
+                    <span class="mt-2">{{result.description|slice:150}}...<br></span>
+                </a>
             </div>
-            {% endfor %}
+            {% endfor %}{% if all_results|length == 0 %}
+            <div class="">No results ... </div>
+            {% endif %}
         </div>
-    </div>
-    <div>
-        <h3 class="text-xl text-blue-700 font-extrabold my-4">Languages frequency</h3>
-        <div>
-            <div class="flex flex-col flex-nowrap">
-                {% for k, v in info.langs.items %}
-                <div class="flex flex-row flew-nowrap">
-                    <div class="capitalize">{{ k }}:&nbsp;</div>
-                    <div class="font-bold">{{ v }}</div>
+
+        <div class="ml-8">
+            <div id="keywords" class="mt-4 mb-2">
+                <h3 class="text-xl text-blue-700 font-extrabold my-4">Top 10 keywords</h3>
+                <div class="flex flex-col flex-nowrap">
+                    {% for kw in info.keywords %}
+                    <div class="flex flex-row flew-nowrap">
+                        <div class="capitalize">{{ kw.0 }}:&nbsp;</div>
+                        <div class="font-bold">{{ kw.1 }}</div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+            <div>
+                <h3 class="text-xl text-blue-700 font-extrabold my-4">Languages frequency</h3>
+                <div>
+                    <div class="flex flex-col flex-nowrap">
+                        {% for k, v in info.langs.items %}
+                        <div class="flex flex-row flew-nowrap">
+                            <div class="capitalize">{{ k }}:&nbsp;</div>
+                            <div class="font-bold">{{ v }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
