@@ -49,7 +49,7 @@ class SearchCreateView(CreateView):
             active_search[0].user.add(self.request.user)
         else:
             print('create search')
-            s = Search(job=job, country=country, update_date=DATE)
+            s = Search(job=job, country=country, update_date=datetime.now(tz=timezone.utc))
             s.save()
             s.user.add(self.request.user)
         update_search(None, job=job, country=country)
