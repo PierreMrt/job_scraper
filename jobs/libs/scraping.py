@@ -240,11 +240,10 @@ def bs4_content(url):
     return content
 
 if __name__ == '__main__':
-    text ='30+ giorni fa'
-    rgx = re.finditer(r"\d+", text)
-    rgx = [r for r in rgx][-1]
-    print(l)
-    beg = l.span()[0]
-    end = l.span()[1]
-    print(text[beg:end] + text[end+1:end+8])
-    print(text[beg:end+8])
+    before_time = DATE
+    from datetime import datetime, timezone, timedelta
+    import time
+    time.sleep(5)
+    after_time = datetime.now(tz=timezone.utc)
+    delta = after_time - before_time
+    print(delta)

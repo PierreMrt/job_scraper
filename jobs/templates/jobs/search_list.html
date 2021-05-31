@@ -6,6 +6,11 @@
     <div class='my-2 p-2 flex flex-row bg-white shadow'>
         <a href=/results/{{search.search_key}} class="rounded-md h-full text-center w-3/4 text-lg py-2 hover:text-blue-700">
             <p><span class="font-bold capitalize">{{ search.job }}</span> in <span class="capitalize">{{search.country}}</span>: {{ search.results.count }} results.</p>
+            {% if  search.update_date|timesince == search.update_date|timeuntil %}
+            <p class='text-gray-800 italic text-xs'>Last updated: ongoing</p>
+            {% else %}
+            <p class='text-gray-800 italic text-xs'>Last updated: {{ search.update_date|timesince }} ago.</p>
+            {% endif %}
         </a>
         <span class='flex flex-col w-1/4'>
             <form class="text-center" action="delete_search/" method="get">
