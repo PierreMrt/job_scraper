@@ -1,6 +1,6 @@
 {% extends "jobs/base.html" %} {% block search %}
 <h2 class="text-3xl mb-4 text-grey-900 font-bold">Active Searches</h2>
-<a id='update' href='/update' onclick=updateResults() class="inline-block text-white rounded font-bold text-sm px-4 py-2 text-center bg-blue-700 hover:bg-blue-800">UPDATE ALL</a>
+<a id='update' href='/update' class="inline-block text-white rounded font-bold text-sm px-4 py-2 text-center bg-blue-700 hover:bg-blue-800">UPDATE ALL</a>
 <div class="mt-2 grid gap-2 grid-cols-1 md:content-start md:grid-cols-2 lg:grid-cols-3 rounded-md">
     {% for search in all_searches %}
     <div class="px-3 py-2 flex flex-row bg-white justify-between shadow">
@@ -9,9 +9,9 @@
                 <span class="font-bold capitalize">{{ search.job }} <span class="font-extralight">({{ search.results.count }})</span></span>
                 <span class="capitalize">{{search.country}}</span>
                 {% if  search.update_date|timesince == search.update_date|timeuntil %}
-                <p class='text-gray-800 italic text-xs'>Last updated: ongoing</p>
+                <p id='last_updated'class='text-gray-800 italic text-xs'>Last updated: ongoing</p>
                 {% else %}
-                <p class='text-gray-800 italic text-xs'>Last updated: {{ search.update_date|timesince }} ago.</p>
+                <p id='last_updated' class='text-gray-800 italic text-xs'>Last updated: {{ search.update_date|timesince }} ago.</p>
                 {% endif %}
             </div>
         </a>
@@ -19,9 +19,9 @@
             <form class="text-center border-b-2 px-2 h-full content-center" action="delete_search/" method="get">
                 <button type="submit" class="font-mono font-bold text-red-600 hover:text-black h-full" name="delete" value="{{search.job}}&&{{search.country}}">delete</button>
             </form>
-            <form class="text-center px-2 h-full content-center" action="update/ " method="post ">
+            <form class="text-center px-2 h-full content-center" action="update/ " method="post">
                 {% csrf_token %}
-                <button type="submit" onclick=updateResults() class="font-mono text-sm text-black hover:text-blue-700 h-full" name='update' value='{{search.job}}&&{{search.country}}'>update</button>
+                <button type="submit" class="font-mono text-sm text-black hover:text-blue-700 h-full" name='update' value='{{search.job}}&&{{search.country}}'>update</button>
             </form>
         </div>
     </div>
@@ -29,17 +29,26 @@
 
 </div>
 <script>
-    // var el = document.getElementById('update');
-    // el.onclick = updateResults;
+    var lastUpdates = document.getElementsByClassName('text-gray-800 italic text-xs')
+    for (let item of lastUpdates) {
+        if (item.innerHTML == 'Last updated: 1&nbsp;minute ago.') {
+            item.innerHTML = 'Last updated: ongoing';
+            reload()
+        }
+        if (item.innerHTML == 'Last updated: ongoing') {
+            reload()
+        }
+    }
 
-    function updateResults() {
-        document.getElementById('text').innerHTML = `
-        <svg class="animate-spin -ml-1 mr-3 h-7 w-7 text-green-500 " xmlns="http://www.w3.org/2000/svg " fill="none " viewBox="0 0 24 24 ">
-            <circle class="opacity-50 " cx="12 " cy="12 " r="10 " stroke="currentColor " stroke-width="4 "></circle>
-            <path class="opacity-75 " fill="currentColor " d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z "></path>
-        </svg>
-        Offers are being added in the background, this might take a while.`;
+    function reload() {
+        setTimeout(function(){
+        document.location.reload()       
+            }, 5000)     
     }
 </script>
 
+{% endblock %}
+
+{% block refresh %}
+<meta http-equiv="Refresh" content="3"> 
 {% endblock %}

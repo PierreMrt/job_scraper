@@ -106,7 +106,7 @@ def update_search(request, **kwargs):
     """ Launch a separate thread, to scrap and update requested search
 
     Args:
-        request ([request]): request.method can be GET, to update all user' search or POST tu update a specific search
+        request ([request]): request.method can be GET, to update all user's search or POST tu update a specific search
         kwargs (dict): if call is coming from another view, we pass the argument via kwargs instead of request
 
     Returns:
