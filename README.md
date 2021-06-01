@@ -38,33 +38,22 @@ First, check that you are under the project's pip environment (in the terminal, 
 
 ## :white_check_mark: Task list
 
-- [ ] manage captcha for indeed and fix scrap
-- [ ] remove quotes and doubles quote in job description
-- [ ] get job offer publication's date
+
+- [x] get job offer publication's date
 - [x] find a place for update button
 - [x] offer language detection
 - [x] dinamic filtering for views - advanced search
-- [ ] rename and clean repo
+- [x] rename and clean repo
 - [x] create account creation
-- [ ] create link with user
-- [ ] update results everyday (cf celery)
-- [ ] host servers
-- [ ] javascript with svelt ?
+- [x] create link with user
+- [ ] manage captcha for indeed
 
-### docs:
+## docs:
 models: https://docs.djangoproject.com/en/3.2/topics/db/models/
 
 MVC django: [https://overiq.com/django-1-10/mvc-pattern-and-django/
 
 Celery: https://docs.celeryproject.org/en/latest/django/first-steps-with-django.html
-
-### tools:
-google sheet:
-https://docs.google.com/spreadsheets/d/1Xfsz0uhI_YVVBCE_eHCwmJCiLJmIB-jo2uL4WnpD81g/edit?usp=
-
-
-db diagram:
-https://dbdiagram.io/d/608bd65fb29a09603d12d414
 
 
 ## Help for setting up the database
@@ -79,3 +68,17 @@ There is an easy way to `populate` the database once your made the migrations, j
 This will populate the database with some Links, Searches and Results.
 
 You will also need to create a new user: `python manage.py createsuperuser`. This will prompt some questions regarding the credentials of that super user.
+
+## Screenshots
+
+* main page
+
+![search_list](https://user-images.githubusercontent.com/69766734/120372171-19d53780-c317-11eb-9b3d-db91fd7812b3.png)
+
+* Result list
+
+![results_list](https://user-images.githubusercontent.com/69766734/120371868-b8ad6400-c316-11eb-80b2-b72cefdf27a7.png)
+
+* Creating a new search
+
+![new_search](https://user-images.githubusercontent.com/69766734/120371849-b21eec80-c316-11eb-9ac8-a5eb477a344b.png)
