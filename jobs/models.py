@@ -77,9 +77,19 @@ class Result(models.Model):
             job, country = Search().split_search_key(search_key)
             search = Search.objects.filter(job=job, country=country).get()
             
-            new_entry = Result.objects.create(search_key=r['search_key'], search=search, source=r['source'], job_id=r['job_id'], job_title=r['job_title'], 
-                                description=r['description'], company=r['company'], location=r['location'],
-                                country=r['country'], date=r['date'], link=r['link'])
+            new_entry = Result.objects.create(
+                search_key=r['search_key'],
+                search=search, 
+                source=r['source'], 
+                job_id=r['job_id'], 
+                job_title=r['job_title'], 
+                description=r['description'], 
+                company=r['company'], 
+                location=r['location'],
+                country=r['country'], 
+                date=r['date'], 
+                link=r['link'])
+
             new_entry.save()
 
     def scrap(self, job, country):
@@ -109,7 +119,6 @@ class Result(models.Model):
         except AttributeError:
             print(f"Skipping monster as {country} doesn't have it.")
 
-
     def cached_ids(self):
         cached_ids = set()
         result = Result.objects.all()
@@ -128,7 +137,3 @@ class Result(models.Model):
             for kw in to_exclude:
                 results = results.exclude(Q(description__contains=kw) | Q(job_title__contains=kw) | Q(location__contains=kw) | Q(company__contains=kw))  
         return results.order_by('-date')
-
-
-def main():
-    Result().filtered_results('data_analyst&&france', include='python, SQL')
