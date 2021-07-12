@@ -69,6 +69,24 @@ This will populate the database with some Links, Searches and Results.
 
 You will also need to create a new user: `python manage.py createsuperuser`. This will prompt some questions regarding the credentials of that super user.
 
+## Help if you deleted the migrations folder
+
+First Clear database migration history.
+
+1. go to python shell `python manage.py shell`
+2. type `from django.db.migrations.recorder import MigrationRecorder`
+3. type `MigrationRecorder.Migration.objects.all().delete()`
+
+Second, recreate migrations
+
+Create a new folder migrations. Create a file named __init__.py inside the folder.
+
+Run command `python manage.py makemigrations`.
+
+Apply fake migration so your database schema and migration history sync.
+
+`python manage.py migrate --fake`
+
 ## Screenshots
 
 * main page

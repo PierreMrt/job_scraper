@@ -3,7 +3,6 @@ from . import views
 from django.urls import path
 from jobs.views import SearchView, SearchCreateView, ResultView
 
-
 urlpatterns = [
     path('', SearchView.as_view(), name='home'),
     path('add/', SearchCreateView.as_view()),
