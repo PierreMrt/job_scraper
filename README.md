@@ -63,7 +63,7 @@ There is an easy way to `populate` the database once your made the migrations, j
 
 1. Delete all migration files in the migrations folder
 2. Delete the db.sqlite3 file
-3. Run `python manage.py makemigrations` then run ``python manage.py migrate jobs && python manage.py loaddata mydata.json`.
+3. Run `python manage.py makemigrations` then run ``python manage.py migrate && python manage.py loaddata mydata.json`.
 
 This will populate the database with some Links, Searches and Results.
 
